@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IUserDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.User">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="salt" jdbcType="VARCHAR" property="salt" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <resultMap type="com.zhidi.system.entity.User" id="UserAndRoleResultMap" extends="BaseResultMap">
+		<collection property="roles" columnPrefix="r_" resultMap="com.zhidi.system.dao.IRoleDao.BaseResultMap"/>
+	</resultMap>
+  
+  <sql id="basicColumns">
+		user_id,user_name,password,salt,phone,email,status,note,create_time,update_time
+	</sql>
+  
+  <sql id="bColumns">
+		u.user_id,u.user_name,u.password,u.salt,u.phone,u.email,u.status,u.note,u.create_time,u.update_time
+	</sql>
+
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_users
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.User">
+    insert into tb_users (user_name, password, 
+      salt, phone, email, 
+      status, note, create_time, 
+      update_time)
+    values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{salt,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      1, #{note,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.User">
+    update tb_users
+    set user_name = #{userName,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      salt = #{salt,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      note = #{note,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select user_id, user_name, password, salt, phone, email, status, note, create_time, 
+    update_time
+    from tb_users
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select user_id, user_name, password, salt, phone, email, status, note, create_time, 
+    update_time
+    from tb_users
+  </select>
+  <!-- 根据用户名查询用户 -->
+  <select id="findByUsername" resultMap="BaseResultMap">
+		select
+		<include refid="basicColumns"/>
+		from tb_users where user_name=#{userName}
+	</select>
+	
+	<!-- 根据条件分页查询总记录数  -->
+	<select id="count" resultType="integer">
+		select count(user_id) 
+		from tb_users
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.userName!=null and con.userName!=''">
+					and user_name like concat('%',#{con.userName},'%')
+				</if>
+				<if test="con.roleId!=null and con.roleId!=''">
+					and user_id in(select user_id from tb_user_role where role_id =#{con.roleId})
+				</if>
+				<if test="con.status!=null and con.status!=''">
+					and status=#{con.status}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据条件分页查询数据 -->
+	<select id="findByPage" resultMap="UserAndRoleResultMap">
+		select <include refid="bColumns" />,
+		r.role_id  r_role_id,
+		r.role_name  r_role_name,
+		r.note  r_note,
+		r.system  r_system,
+		r.status  r_status,
+		r.create_time  r_create_time,
+		r.update_time  r_update_time
+		from (select <include refid="basicColumns"/> from tb_users <where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.userName!=null and con.userName!=''">
+					and user_name like concat('%',#{con.userName},'%')
+				</if>
+				<if test="con.status!=null and con.status!=''">
+					and status=#{con.status}
+				</if>
+			</if>
+		</where>
+		limit #{offset},#{pageSize}
+		) u 
+		left join tb_user_role ur 
+		on u.user_id=ur.user_id 
+		left join tb_roles r
+		on ur.role_id =r.role_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.roleId!=null and con.roleId!=''">
+					and ur.role_id =#{con.roleId}
+				</if>
+			</if>
+		</where>
+		
+	</select>
+	
+	<!-- 按userId批量删除,注意是逻辑删除，0表示禁用，1表示正常，2表示删除 -->
+	<update id="deleteUser">
+	update tb_users set status=2
+    where user_id in 
+    <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+    	#{userId}
+    </foreach>
+	</update>
+	
+	<!-- 根据当前用户的id修改密码 -->
+	<update id="modifyPassword">
+		update tb_users set password=#{newPassword} where user_id =#{userId}
+	</update>
+</mapper>

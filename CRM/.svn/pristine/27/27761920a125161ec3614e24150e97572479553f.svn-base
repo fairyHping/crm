@@ -1,0 +1,169 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<base href="<%=path%>">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>添加客户</title>
+<%@include file="../script.html" %>
+
+<style type="text/css">
+	.td1 {
+		background-color: #f5f5f5;width: 100;
+	}
+	
+	table {
+		border-collapse: collapse;
+		border-color:#f5ffff;
+		margin: 90px auto 0 ;
+		background-color: white;
+	}
+	body{
+		color: black;
+		background-color: #f5f5f5;
+	}
+	td{min-width: 90px}
+	tr{height: 30px}
+</style>
+</head>
+<body>
+	<div align="left" >
+	
+	
+
+		<table border="gray,black,1px" width="80%">
+		 <!--   <h5>添加客户</h5>
+	      <hr color="lightgray" width="100%" size="1px"> -->
+			<tbody>
+			<!-- 主要信息 -->
+			<tr>
+				<td colspan="4">主要信息</td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">负责人：</td>
+				<td><input type="text" name="editor" placeholder="admin" /></td>
+				<td class="td1" align="right">客户名称：</td>
+				<td><input type="text" name="customer"></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">客户行业：</td>
+				<td><select style="width: 175px" name="customerIndustry">
+						<option>--请选择--</option>
+						<option>IT</option>
+						<option>卖肉</option>
+				</select></td>
+				<td class="td1" align="right">客户信息来源：</td>
+				<td><select style="width: 175px" name="msgFrom">
+						<option>百度</option>
+						<option>新闻</option>
+						<option>市场</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">公司性质：</td>
+				<td><input type="radio" name="xingzhi">合资 <input
+					type="radio" name="xingzhi">国企 <input type="radio"
+					name="xingzhi">民营</td>
+				<td class="td1" align="right">邮编：</td>
+				<td><input type="text" name="emailCode"></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">年营业额：</td>
+				<td><select style="width: 175px" name="turnover">
+						<option>--请选择--</option>
+						<option>12345678</option>
+						<option>876543</option>
+				</select></td>
+				<td class="td1" align="right">评分：</td>
+				<td><input type="radio" name="xingzhi">一星 <input
+					type="radio" name="xingzhi">二星 <input type="radio"
+					name="xingzhi">三星</td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">联系地址：</td>
+				<td colspan="3"><select style="width: 120px">
+						<option>北京市</option>
+						<option>上海</option>
+						<option>湖北</option>
+				</select> <select style="width: 120px">
+						<option>全部</option>
+						<option>武汉</option>
+						<option>洛阳</option>
+				</select> <select style="width: 120px">
+						<option>全部</option>
+						<option>武昌区</option>
+						<option>洪山区</option>
+				</select> <select style="width: 120px">
+						<option>街道信息</option>
+						<option>八一路</option>
+						<option>榕苑路</option>
+				</select></td>
+			</tr>
+
+			<!-- 首要联系人信息 -->
+			<tr>
+				<td colspan="4">首要联系人信息</td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">姓名：</td>
+				<td><input type="text" name="linkman"></td>
+				<td class="td1" align="right">称呼：</td>
+				<td><input type="text" name="named"></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">邮箱：</td>
+				<td><input type="text" name="mailbox"></td>
+				<td class="td1" align="right">职位：</td>
+				<td><input type="text" name="position"></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">QQ：</td>
+				<td><input type="text" name="QQ"></td>
+				<td class="td1" align="right">手机：</td>
+				<td><input type="text" name="mobile"></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">备注：</td>
+				<td colspan="3"><textarea name="textarea" cols="100" rows="3"></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="4">附加信息</td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">员工数：</td>
+				<td colspan="3"><select style="width: 175px" name="employees">
+						<option>--请选择--</option>
+						<option>9864321</option>
+						<option>765431</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td class="td1" align="right">备注：</td>
+				<td colspan="3"><textarea name="textarea" cols="80" rows="4"></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="4" align="center">
+					<a class="easyui-linkbutton save" data-options="iconCls:'icon-ok',plain:true">保存</a>
+					<a class="easyui-linkbutton saveAndSet" data-options="iconCls:'icon-add',plain:true">保存并新建</a>
+					<a class="easyui-linkbutton back-button" href="javascript:void(0);" data-options="iconCls:'icon-back',plain:true">返回</a>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			$(".back-button").on("click",function(){
+				parent.$("#topWindow").window("close");
+			})
+			
+		});
+
+	</script>
+</body>

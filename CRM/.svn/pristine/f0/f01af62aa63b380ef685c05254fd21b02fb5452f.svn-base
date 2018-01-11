@@ -1,0 +1,35 @@
+
+
+package com.zhidi.system.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IDictionaryDao;
+import com.zhidi.system.entity.Dictionary;
+import com.zhidi.system.service.IDictionaryService;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年11月2日
+* 类描述：
+*/
+@Service
+public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implements IDictionaryService {
+
+	@Autowired
+	private IDictionaryDao dictionaryDao;
+
+	
+	@Override
+	public List<Dictionary> findStatus() {
+		
+		return dictionaryDao.findStatus();
+	}
+
+}
+
+

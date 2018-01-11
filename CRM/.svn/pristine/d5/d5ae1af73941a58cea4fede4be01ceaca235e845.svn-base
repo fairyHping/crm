@@ -1,0 +1,165 @@
+package com.zhidi.system.controller;
+
+
+
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Customer;
+import com.zhidi.system.service.ICustomerService;
+
+/**
+ * 客户管理全部查询
+ * 
+ * @author 石烁
+ *
+ */
+@Controller
+@RequestMapping("/system/customer")
+public class CustomerController {
+
+	@Autowired
+	private ICustomerService customerService;
+
+	/**
+	 * 转向到system/list_user.jsp
+	 * 
+	 * @return
+	 */
+	@GetMapping("/list")
+	public String tolist() {
+		return "system/listCustomer";
+	}
+
+	/**
+	 * 处理数据表格的分页请求
+	 * 
+	 * @param page
+	 *            -将分页的页面、一页的记录数、查询条件、以及查询结果封装到该对象中
+	 * @return
+	 */
+	@PostMapping("/list")
+	@ResponseBody
+	public JsonResult list(PageBean<Customer> page) {
+		page = customerService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+    /**
+     * 客户的新建页面
+     * @return
+     */
+	@GetMapping("/system/add")
+	public String  toAdd(){
+		return  "system/addCustomer";
+	}
+	/**
+	 * 客户新建的方法
+	 * @param customer
+	 */
+	@PostMapping("/system/add")
+	@ResponseBody
+	public  JsonResult  save(Customer customer){
+		Integer rows=customerService.save(customer);
+		if(rows>0){
+			return JsonResult.buildSuccessResult("添加成功");
+		}else{
+			return JsonResult.buildSuccessResult("添加失败");
+		}
+	  
+		
+	}
+	
+	/**  
+     * 批量删除客户  
+     * @param id  
+     * @param request  
+     * @param response  
+     */  
+	@PostMapping("/delCustomer")
+	@ResponseBody
+	public JsonResult deleteCustomer(String customerIds) {
+		Integer rows = customerService.deleteCustomer(customerIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除成功！");
+		} else {
+			return JsonResult.buildFailureResult(-120, "删除失败！");
+		}
+	}
+	
+	/**
+	 转向到修改的jsp* 
+	 * @return
+	 */
+	@GetMapping("/edit")
+	public  String toEdit(Integer customerId ,Model model){
+		 Customer customer=customerService.findById(customerId);
+		 model.addAttribute("customer",customer);
+		return "system/editCustomer";
+	}
+	/**
+	 * 编辑客户信息
+	 * @param customer
+	 * @return
+	 */
+	@PostMapping("/edit")
+	@ResponseBody
+	public JsonResult update(Customer customer) {
+		if(customer==null){
+			return JsonResult.buildFailureResult(-200, "修改用户信息失败");
+		}
+		Integer rows=customerService.update(customer);
+	if (rows > 0) {
+			return JsonResult.buildSuccessResult("修改成功！");
+		} else {
+			return JsonResult.buildFailureResult(-120, "修改失败！");		
+  
+ }	}
+
+/*	/**
+	 * 根据客户名查询对应的客户
+	 * @param 
+	 * @return
+	 *//*
+	@RequestMapping("/showCustomer")
+    public String findById(Integer customerId,HttpServletRequest request,Model model){  
+               customerId =Integer.parseInt(request.getParameter("customerId"));
+               Customer customer=this.customerService.findById(customerId);
+               model.addAttribute("customer",customer);
+               return "showCustomer";
+    }  */
+	/**
+	 * 查看客户详情
+	 * @param customerId
+	 * @param model
+	 * @return 
+	 */
+      @GetMapping("/find")
+      public String findAll(Integer customerId,Model modle){
+    	  Customer customer=customerService.findById(customerId);
+ 		   modle.addAttribute("customer",customer);
+    	  return "/system/customer/customerInfo";  
+      }
+	/**
+	 * 查询全部信息
+	 * @return
+	 */
+	@PostMapping("/listAll")
+	@ResponseBody
+	public JsonResult listAll(){
+		List<Customer> customer=customerService.findAll();
+		return JsonResult.buildSuccessResult("查询成功", customer);
+		
+	}
+}	

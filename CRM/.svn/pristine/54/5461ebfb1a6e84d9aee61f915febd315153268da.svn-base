@@ -1,0 +1,147 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+        <base href="<%=path%>">
+        <meta charset="UTF-8">
+        <title>客户管理</title>
+        <%@include file="../script.html" %>
+    
+    </head>
+    <body>
+      <div>
+	    	<div style="padding: 1px;background-color: #ECECFF" >
+	    		<label>客户视图：</label>
+		    		 <a class="easyui-linkbutton" data-options="iconCls:'icon-more',plain:true">全部</a>
+		    		 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-man',plain:true">我负责的</a>
+			    	 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-tip',plain:true">我创建的</a>
+			    	  <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-man',plain:true">下属负责的</a>
+			    	 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-tip',plain:true">下属创建的</a>
+	    		<span style="margin-right: 150px">
+	                 <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">今日需联系</a>
+	    			 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-add',plain:true">本周需联系</a>
+		    		 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-edit',plain:true">本月需联系</a>
+		    		  <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">7日需联系</a>
+	    			 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-add',plain:true">15日需联系</a>
+		    		 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-edit',plain:true">30日需联系</a>
+		    		 <a class="easyui-linkbutton edit-bmutton" data-options="iconCls:'icon-add',plain:true">最近创建</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-man',plain:true">最近更新</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-cart',plain:true">回收站</a>
+		    		 
+	    		</span>
+	    	</div>	
+	    	<div style="padding: 10px">
+	    	      <select style="width: 80px">
+	    	        <option>批量操作</option>
+	    	      </select>
+		    	  <span style="">
+		    	      <select style="color: gray">
+		    	           <option>---请选择筛选条件---</option>
+		    	      </select>
+		    	      <select style="color: gray">
+		    	            <option>包含</option>
+		    	      </select>
+		    	      <select style="width: 80px"></select>    	 
+		    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">搜索</a>
+	    	      </span>
+	    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" style="margin-left: 200px">添加商机</a>
+	    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true">商机工具</a>
+    	       </div>	 	 
+    	</div>
+    	<table id="businessList" style="width:100%">
+    	</table>
+    	
+    	
+    
+    	<script type="text/javascript">
+    	<!-- 	//为分配添加、修改、删除、添加角色按钮绑定事件
+		$(function(){
+			$(".assign-button").on("click",function(event){
+				//阻止默认的连接的跳转行为
+				event.preventDefault();
+				//获取到选中的用户
+				var rows = $("#customerList").datagrid("getChecked");
+				//没有选中某一个用户时进行提示
+				if(!rows || rows.length<1){
+					parent.$.messager.alert("警告","必须选中 用户！","warning");
+					return;
+				}
+
+				//获取到用户的id
+				var customerIds = new Array();
+				$.each(rows,function(index,obj){
+					if(obj){
+						customerIds.push(obj.userId);
+					}
+				});
+
+				//打开新窗口，新窗口中添加客户列表页面
+				parent.openTopWindow({width:600,
+						height:400,
+						title:"添加客户",
+						url:"system/customer/assign?customerIds="+customerIds.join(","),
+						onClose : function(){
+							$("#customerList").datagrid("reload");
+						}
+					});
+			});
+		});
+ -->
+
+
+   	   
+			$(function(){
+				$("#businessList").datagrid({
+					url : "system/business/list",
+					toolbar : "#toolbar",
+					pagination : true,
+					fitColumns : true,
+					rownumbers : true,
+					idField : "Id",
+					columns : [[
+						{field:'Id',width:70,align:'center',checkbox:true},		
+						{field:'customer',title:'客户',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.name;
+							}
+							return "";
+						}},
+						{field:'origin',title:'商机来源',width:70,align:'center'},
+						{field:'nextstepTime',title:'下次联系时间',width:70,align:'center'},
+						{field:'nextstep',title:'下次联系内容',width:70,align:'center'},
+						{field:'creator',title:'负责者',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.userName;
+							}
+							return "";
+						} },
+						{field:'user',title:'创建者',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.userName;
+							}
+							return "";
+						} },
+						{field:'createTime',title:'创建时间',width:70,align:'center'},
+						{field:'updateTime',title:'更新时间',width:70,align:'center'},
+					    {field:'opreation',title:'操作',width:100,align:'center',formatter:function(value,rowData,index){
+                                 return "<a href='javascript:void(0)'  onclick='detail("+rowData.id+")'>查看</a>&nbsp;&nbsp;"
+                                 +"<a href='javascript:void(0)'  onclick='detail("+rowData.id+")'>编辑</a>"   
+						    }}
+					]],
+					loadFilter: function(data){
+						if(data && data.result){
+							return data.result;
+							$("#customerList").datagrid("reload");
+						}
+						return null;
+					}
+				});
+			});
+		
+    	</script>
+    </body>
+</html>

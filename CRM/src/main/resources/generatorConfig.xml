@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<context id="mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+		<!-- 注释生成器 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true"/>
+			<property name="suppressDate" value="true" />
+		</commentGenerator>
+	
+		<!-- 数据库连接相关信息 -->
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost:3306/tb_crm" 
+			userId="root"
+			password="root">
+		</jdbcConnection>
+
+		<!-- Java类型解析  -->
+		<javaTypeResolver>
+			<!-- 指定是否将jdbc类型DECIMAL或者NUMERIC强制转换为java.math.BigDecimal类型 如果为定义默认值为false，当为false时 
+				且如果数据库中对应的列为deciaml或者Number类型时 
+				1、如果列的长度超过18位，或者小数位大于0则自动生成属性为为java.math.BigDecimal类型 
+				2、如果列的长度为10到18位，且小数位等于0，那么自动生成属性为java.lang.Long类型 
+				3、如果列的长度为5到9位，且小数位等于0，那么自动生成属性为java.lang.Integer类型 
+				4、如果列的长度为小于5位，且小数位等于0，那么自动生成属性为java.lang.Short类型 -->
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+		<!-- 
+			根本表生成实体
+			根据表生成xml映射信息
+			根据表生成dao接口
+		 -->
+		<!-- 指定实体生成的位置-->
+		<javaModelGenerator targetPackage="com.zhidi.system.entity"
+			targetProject="src\main\java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<!-- 指定映射文件生成的位置 -->
+		<sqlMapGenerator targetPackage="mapper"
+			targetProject="src\main\resources">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- 映射信息对应的接口生成位置 -->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="com.zhidi.system.dao" targetProject="src\main\java">
+			<property name="enableSubPackages" value="true" />
+			<property name="rootInterface" value="com.zhidi.base.BaseDao"/>
+		</javaClientGenerator>
+
+		<!-- 定义表以及生成的实体类、dao类、映射文件等信息 -->
+
+		<table tableName="tb_dictionary" domainObjectName="Dictionary"
+			mapperName="IDictionaryDao" />
+		
+		
+
+	</context>
+</generatorConfiguration>

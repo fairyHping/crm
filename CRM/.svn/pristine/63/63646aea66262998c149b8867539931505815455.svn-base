@@ -1,0 +1,347 @@
+
+package com.zhidi.system.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Leads;
+import com.zhidi.system.entity.User;
+import com.zhidi.system.service.IBusinessService;
+import com.zhidi.system.service.ILeadsService;
+import com.zhidi.system.service.IUserService;
+
+/**
+ * @author 作者:ZHP createTime 创建时间:2017年11月6日 类描述：
+ */
+@RequestMapping("/system/leads")
+@Controller
+public class LeadsController {
+
+	@Autowired
+	private ILeadsService leadsService;
+
+	@Autowired
+	private IUserService userService;
+
+	@Autowired
+	private IBusinessService businessService;
+
+	@GetMapping("/list")
+	public String toListLeads() {
+
+		return "system/leads/listLeads";
+	}
+
+	/**
+	 * 分页查询未被删除且有负责人的线索信息
+	 * 
+	 * @param page
+	 * @return
+	 */
+	@PostMapping("/listLeads")
+	@ResponseBody
+	public JsonResult listLeads(PageBean<Leads> page,HttpSession session) {
+		page.getCondition().put("isDeleted", 1);// 未被删除的线索
+		page.getCondition().put("owner", 0);// 有负责人
+		//获取当前用户
+		User user=(User) session.getAttribute("user");
+		page.getCondition().put("ownerUserId", user.getUserId());
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+
+	/**
+	 * 转向到添加线索的页面
+	 * 
+	 * @return
+	 */
+	@GetMapping("/addLeads")
+	public String toAddLeads(Model model) {
+		List<String> sources = businessService.findOrigin();
+		model.addAttribute("sources", sources);
+		return "system/leads/addLeads";
+	}
+
+	/**
+	 * 处理添加线索的请求
+	 * 
+	 * @param leads
+	 *            -线索对象
+	 * @param session
+	 *            -session对象
+	 * @return
+	 */
+	@PostMapping("/addLeads")
+	@ResponseBody
+	public JsonResult addLeads(Leads leads, HttpSession session) {
+		if (leads == null) {
+			return JsonResult.buildFailureResult(-200, "添加线索失败");
+		}
+		// 从session中得到当前用户的信息，作为创建者的信息
+		User user = (User) session.getAttribute("user");
+		leads.setIsDeleted(1);
+		leads.setCreatorUserId(user.getUserId());
+		leads.setCreateTime(new Date());
+		leads.setUpdateTime(new Date());
+		// 让新添加的线索默认为未被转化的线索
+		leads.setIsTransformed(1);
+		Integer rows = leadsService.save(leads);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("添加线索成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "添加线索失败!");
+		}
+
+	}
+
+	/**
+	 * 转向到线索池页面
+	 * 
+	 * @return
+	 */
+	@GetMapping("/pool")
+	public String toListPoolLeads() {
+
+		return "system/leads/leadsPool";
+	}
+
+	/**
+	 * 分页查询未被删除且没有负责人的线索信息，即线索池的信息
+	 * 
+	 * @param page
+	 * @return
+	 */
+	@PostMapping("/listPool")
+	@ResponseBody
+	public JsonResult listPoolLeads(PageBean<Leads> page) {
+		page.getCondition().put("owner", 1);
+		page.getCondition().put("isDeleted", 1);
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+
+	/**
+	 * 转向到线索回收站页面
+	 * 
+	 * @return
+	 */
+	@GetMapping("/leadsRecycle")
+	public String toLeadsRecycle() {
+		return "system/leads/leadsRecycle";
+	}
+
+	/**
+	 * 分页查询已经被删除的线索信息
+	 * 
+	 * @param page
+	 * @return
+	 */
+	@PostMapping("/listLeadsRecycle")
+	@ResponseBody
+	public JsonResult listLeadsRecycle(PageBean<Leads> page) {
+
+		Map<String, Object> condition = page.getCondition();
+		if (condition == null || condition.isEmpty()) {
+			condition = new HashMap<>();
+		}
+		condition.put("isDeleted", 0);// 已被删除
+		page.setCondition(condition);
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+
+	/**
+	 * 转向到线索修改页面
+	 * 
+	 * @param leadsId
+	 *            -线索id
+	 * @param model
+	 *            -Model对象，将查到的线索信息以及下拉列表的信息携带到页面上
+	 * @return
+	 */
+	@GetMapping("/updateLeads")
+	public String toUpdateLeads(Integer leadsId, Model model) {
+		Leads leads = leadsService.findById(leadsId);
+		List<User> users = userService.findAll();
+		model.addAttribute("leads", leads);
+		model.addAttribute("users", users);
+		List<String> sources = businessService.findOrigin();
+		model.addAttribute("sources", sources);
+		return "system/leads/updateLeads";
+	}
+
+	/**
+	 * 处理修改线索的业务
+	 * @param leads -线索对象
+	 * @return
+	 */
+	@PostMapping("/updateLeads")
+	@ResponseBody
+	public JsonResult updateLeads(Leads leads) {
+		Leads l=leadsService.findById(leads.getLeadsId());
+		leads.setIsDeleted(1);
+		//将创建人和创建时间设为之前的数据
+		leads.setCreatorUserId(l.getCreatorUserId());
+		leads.setCreateTime(l.getCreateTime());
+		leads.setUpdateTime(new Date());
+		// 让新添加的线索默认为未被转化的线索
+		leads.setIsTransformed(1);
+		Integer rows = leadsService.update(leads);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("修改线索成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "修改线索失败!");
+		}
+	}
+	
+	/**
+	 * 获取线索的详细信息
+	 * @param leadsId -线索id
+	 * @param model -将查到的信息放到Model对象中携带到页面上
+	 * @return
+	 */
+	@GetMapping("/leadsInfo")
+	public String leadsInfo(Integer leadsId,Model model){
+		Leads leads=leadsService.findById(leadsId);
+		model.addAttribute("leads", leads);
+		return "system/leads/leadsInfo";
+	}
+	
+	/**
+	 * 处理删除线索业务，可批量删除
+	 * @param leadsIds
+	 * @return
+	 */
+	@PostMapping("/deleteBatch")
+	@ResponseBody
+	public JsonResult deleteBatch(String leadsIds){
+		
+		Integer rows=leadsService.deleteBatch(leadsIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除线索成功!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "删除线索失败！");
+		}	
+	}
+	
+	/**
+	 * 处理放入线索池的业务，可批量放入
+	 * @param leadsIds
+	 * @return
+	 */
+	@PostMapping("/toPoolBatch")
+	@ResponseBody
+	public JsonResult toPoolBatch(String leadsIds){
+		
+		Integer rows=leadsService.toPoolBatch(leadsIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("成功放入线索池!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "放入线索池失败！");
+		}	
+	}
+	/**
+	 * 根据线索id将线索从回收站撤回
+	 * @param leadsIds
+	 * @return
+	 */
+	@PostMapping("/withdrawLeads")
+	@ResponseBody
+	public JsonResult withdrawLeads(String leadsIds){
+		
+		Integer rows=leadsService.withdrawLeads(leadsIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("成功将回收站线索撤回!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "撤回线索失败！");
+		}	
+	}
+	
+	/**
+	 * 根据线索id将线索从回收站撤回
+	 * @param leadsIds
+	 * @return
+	 */
+	@PostMapping("/leadsTransform")
+	@ResponseBody
+	public JsonResult leadsTransform(String leadsIds,HttpSession session){
+		User user =(User) session.getAttribute("user");
+		//进行线索转换时，将转换人设为当前用户
+		Integer rows=leadsService.leadsTransform(leadsIds,user.getUserId());
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("线索转换成功!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "线索转换失败！");
+		}	
+	}
+	
+	/**
+	 * 转向到线索统计页面leadsStatistical.jsp
+	 * @return
+	 */
+	@GetMapping("/statistical")
+	public String statistical(){
+		return "system/leads/leadsStatistical";
+	}
+	
+	/**
+	 * 线索统计，即查询所有的线索信息
+	 * @param page
+	 * @return
+	 */
+	@PostMapping("/statisticalList")
+	@ResponseBody
+	public JsonResult statisticalList(PageBean<Leads> page){
+		page =leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page); 
+	}
+	
+	/**
+	 * 当前用户领取线索池中的线索
+	 * @param leadsId
+	 * @return
+	 */
+	@PostMapping("/getLeads")
+	@ResponseBody
+	public JsonResult getLeads(Integer leadsId,HttpSession session){
+		User user =(User) session.getAttribute("user");
+		Integer rows=leadsService.getLeads(leadsId,user.getUserId());
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("领取线索成功!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "领取线索失败！");
+		}	
+	}
+	
+	/**
+	 * 给用户分配线索，可批量分配
+	 * @param leadsIds -线索id
+	 * @param userId -用户id
+	 * @return
+	 */
+	@PostMapping("/assignBatch")
+	@ResponseBody
+	public JsonResult assignBatch(String leadsIds,Integer userId){
+		Integer rows=leadsService.assignBatch(leadsIds,userId);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("线索分配成功!");
+		} else {
+			return JsonResult.buildFailureResult(-200, "线索分配失败！");
+		}	
+		
+	}
+}

@@ -1,0 +1,11 @@
+package com.zhidi.system.service;
+
+import java.util.HashMap;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.SmsRecord;
+
+public interface ISmsRecordService extends BaseService<SmsRecord> {
+	HashMap<String, Object> sendTemplateSMS(String to,
+			String templateId, String[] datas);
+}

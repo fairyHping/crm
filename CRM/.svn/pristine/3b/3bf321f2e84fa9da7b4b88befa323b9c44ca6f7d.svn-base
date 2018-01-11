@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IUserRoleDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.UserRole">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="role_id" jdbcType="INTEGER" property="roleId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from tb_user_role
+    where user_id = #{userId,jdbcType=INTEGER}
+      and role_id = #{roleId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.UserRole">
+    insert into tb_user_role (user_id, role_id)
+    values (#{userId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER})
+  </insert>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select user_id, role_id
+    from tb_user_role
+  </select>
+  
+  <!-- 批量删除用户角色的对应信息 -->
+  <delete id="deleteBatch">
+  	delete from tb_user_role where user_id in
+  	<foreach collection="list" item="ur" open="(" close=")" separator=",">
+  		#{ur.userId}
+  	</foreach>
+  </delete>
+  
+  <insert id="saveBatch">
+  	insert into tb_user_role(user_id,role_id) values
+  	<foreach collection="list" item="ur" separator=",">
+  		(#{ur.userId},#{ur.roleId})
+  	</foreach>
+  </insert>
+</mapper>

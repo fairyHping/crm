@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IBusinessCustomerDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.BusinessCustomer">
+    <id column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="customer_id" jdbcType="INTEGER" property="customerId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_r_business_customer
+    where business_id = #{businessId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.BusinessCustomer">
+    insert into tb_crm_r_business_customer (business_id, customer_id)
+    values (#{businessId,jdbcType=INTEGER}, #{customerId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.BusinessCustomer">
+    update tb_crm_r_business_customer
+    set customer_id = #{customerId,jdbcType=INTEGER}
+    where business_id = #{businessId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select business_id, customer_id
+    from tb_crm_r_business_customer
+    where business_id = #{businessId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select business_id, customer_id
+    from tb_crm_r_business_customer
+  </select>
+
+</mapper>

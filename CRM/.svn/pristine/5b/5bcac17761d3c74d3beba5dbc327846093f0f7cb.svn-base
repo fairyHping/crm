@@ -1,0 +1,141 @@
+package com.zhidi.system.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Function;
+import com.zhidi.system.service.IFunctionService;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年11月2日
+* 类描述：
+*/
+@Controller
+@RequestMapping("/system/functions")
+public class FunctionController {
+	
+	@Autowired
+	private IFunctionService funcService;
+	
+	@RequestMapping("/list")
+	public String toListUsers() {
+		return "system/function/listFunctions";
+	}
+	
+	@RequestMapping("/listAll")
+	@ResponseBody
+	public JsonResult listAll(){
+		List<Function> funcs=funcService.findAll();
+		return JsonResult.buildSuccessResult("查询成功", funcs);
+	}
+	
+	@PostMapping("/listFunctions")
+	@ResponseBody
+	public JsonResult listFunctions(PageBean<Function> page){
+		page=funcService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);	
+	}
+	
+	@RequestMapping("/listParent")
+	@ResponseBody
+	public JsonResult listParent(){
+		List<Function> functions=funcService.listParentFunction();
+		return JsonResult.buildSuccessResult("查询成功", functions);
+	}
+	
+	/**
+	 * 根据角色id查询对应的权限
+	 * @param roleIds -某个角色的id
+	 * @return
+	 */
+	@PostMapping("/findByRoleId")
+	@ResponseBody
+	public JsonResult findByRoleId(Integer roleIds){
+		List<Function> functions=funcService.findByRoleId(roleIds,1);
+		return JsonResult.buildSuccessResult("查询成功", functions);
+		
+	}
+	
+	@PostMapping("/deleteFunction")
+	@ResponseBody
+	public JsonResult deleteFunction(String funcIds){
+		Integer rows=funcService.deleteFunction(funcIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "删除失败！");
+		}
+	}
+	
+	@GetMapping("/addFunction")
+	public String toAddFunction(){
+		
+		return "system/function/addFunction";
+	}
+	
+	@PostMapping("/addFunction")
+	@ResponseBody
+	public JsonResult addFunction(Function function){
+		if(function==null){
+			return JsonResult.buildFailureResult(-200, "添加权限信息失败");
+		}
+//		if(function.getFuncUrl()==null){
+//			function.setParentId(null);
+//		}
+		function.setStatus(1);
+		function.setCreateTime(new Date());
+		Integer rows=funcService.save(function);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("添加权限信息成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "添加权限信息失败！");
+		}
+	}
+	
+	
+	@GetMapping("/functionInfo")
+	public String toFunctionInfo(Integer funcId,Model model){
+		Function func=funcService.findById(funcId);
+		model.addAttribute("func", func);
+		return "system/function/functionInfo";
+	}
+	
+	@GetMapping("/updateFunction")
+	public String toUpdateFunction(Integer funcId,Model model){
+		Function func=funcService.findById(funcId);
+		List<Function> parentFunctions=funcService.listParentFunction();
+		model.addAttribute("func", func);
+		model.addAttribute("parentFunctions", parentFunctions);
+		return "system/function/updateFunction";
+	}
+	
+	@PostMapping("/updateFunction")
+	@ResponseBody
+	public JsonResult updateFunction(Function function){
+		if(function==null){
+			return JsonResult.buildFailureResult(-200, "修改权限信息失败");
+		}
+		Function func=funcService.findById(function.getFuncId());
+		function.setCreateTime(func.getCreateTime());
+		function.setUpdateTime(new Date());
+		Integer rows=funcService.update(function);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("修改权限信息成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "修改权限信息失败！");
+		}
+	}
+}
+
+

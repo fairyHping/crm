@@ -1,0 +1,136 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();//获取应用程序的根路径
+	//获取应用程序的全路径
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href=<%=path%>>
+<meta charset="UTF-8">
+<title>新建线索</title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+#div {
+	text-align: center;
+	width: 750px;
+	margin-left:15px;
+	margin-right: 30px;
+	margin-top:20px;
+}
+
+
+
+#other {
+	text-align: left;
+	line-height: 40px;
+}
+
+.td1 {
+	text-align: right;
+	background-color: #f5f5f5;
+}
+
+.td2 {
+	text-align: left
+}
+</style>
+</head>
+<body>
+	<div id="div">
+		<form id="leadsForm">
+			<div id="main" class="easyui-panel">
+				<table style="text-align: center">
+					<tr>
+						<td colspan="4" id="other"><strong>主要信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">负责人：</td>
+						<td class="td2"><input name="ownerUserId"
+							class="easyui-combobox" data-options="required:true"
+							value="${sessionScope.user.userName}"> 
+							<a id="leadsPool"
+							class="easyui-linkbutton">放入线索池</a></td>
+						<td class="td1">公司名：</td>
+						<td class="td2"><input name="name" class="easyui-textbox"
+							data-options="required:true"></td>
+					</tr>
+					<tr>
+						<td class="td1">来源：</td>
+						<td class="td2"><input name="source" class="easyui-combobox"
+							value="--请选择--"></td>
+						<td class="td1">联系人姓名：</td>
+						<td class="td2"><input name="contactsName"
+							class="easyui-textbox" data-options="required:true"></td>
+					</tr>
+					<tr>
+						<td class="td1">职位：</td>
+						<td class="td2"><input name="position" class="easyui-textbox"></td>
+						<td class="td1">尊称：</td>
+						<td class="td2"><input name="source" class="easyui-combobox"
+							value="--请选择--"></td>
+					</tr>
+					<tr>
+						<td class="td1">手机：</td>
+						<td class="td2"><input name="mobile" class="easyui-textbox"
+							data-options="required:true"></td>
+						<td class="td1">邮箱：</td>
+						<td class="td2"><input name="email" class="easyui-textbox"></td>
+					</tr>
+					<tr>
+						<td class="td1">地址：</td>
+						<td colspan="3" class="td2"><input name="source"
+							class="easyui-combobox" value="北京"> <input name="source"
+							class="easyui-combobox" value="--请选择--"> <input
+							name="source" class="easyui-combobox" value="--请选择--"></td>
+
+					</tr>
+					<tr>
+						<td class="td1">下次联系时间：</td>
+						<td class="td2"><input name="nextstepTime"
+							class="easyui-datetimebox"></td>
+						<td class="td1">下次联系内容：</td>
+						<td><input name="nextstep" class="easyui-textbox"></td>
+					</tr>
+					<tr>
+						<td colspan="4" id="other"><strong>附加信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">备注：</td>
+						<td class="td2"><textarea class="theme-textbox-radius"
+								rows="5" cols="50" name="leadnote"
+								data-options="validType:'maxLength[150]'"></textarea></td>
+					</tr>
+					<tr>
+						<td colspan="4" align="center"><a id="saveBtn"
+							class="easyui-linkbutton" data-options="iconCls:'icon-ok'"
+							style="margin-right: 20px">保存</a> <a id="resetBtn"
+							class="easyui-linkbutton" data-options="iconCls:'icon-undo'">重置</a></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+<script type="text/javascript">
+$(function(){
+	/* 获取到下拉列表中的数据 */
+	
+	$("#saveBtn").on("click",function(event){
+		//阻止原有的点击事件行为
+		event.preventDefault();
+		
+		
+	});
+	
+	$("#resetbtn").on("click",function(event){
+		//阻止原有的点击事件行为
+		event.preventDefault();
+		$("#saveForm").form("clear");
+	});	
+});
+</script>
+</html>

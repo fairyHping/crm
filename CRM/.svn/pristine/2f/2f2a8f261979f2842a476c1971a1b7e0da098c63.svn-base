@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IEmployeeDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Employee">
+    <id column="emp_id" jdbcType="INTEGER" property="empId" />
+    <result column="position_id" jdbcType="INTEGER" property="positionId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user_id" jdbcType="INTEGER" property="updateUserId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_employee
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Employee">
+    insert into tb_crm_employee (emp_id, position_id, status, 
+      name, img, sex, email, 
+      telephone, address, create_time, 
+      creator_user_id, update_time, update_user_id, 
+      user_id)
+    values (#{empId,jdbcType=INTEGER}, #{positionId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, 
+      #{telephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{creatorUserId,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=INTEGER}, 
+      #{userId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Employee">
+    update tb_crm_employee
+    set position_id = #{positionId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER}
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select emp_id, position_id, status, name, img, sex, email, telephone, address, create_time, 
+    creator_user_id, update_time, update_user_id, user_id
+    from tb_crm_employee
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select emp_id, position_id, status, name, img, sex, email, telephone, address, create_time, 
+    creator_user_id, update_time, update_user_id, user_id
+    from tb_crm_employee
+  </select>
+</mapper>

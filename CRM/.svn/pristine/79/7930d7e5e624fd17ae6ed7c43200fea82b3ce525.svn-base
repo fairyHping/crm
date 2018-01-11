@@ -1,0 +1,44 @@
+package com.zhidi.system.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Department;
+import com.zhidi.system.entity.Product;
+import com.zhidi.system.service.IDepartemtService;
+
+/**
+*2017年11月10日
+*@author 作者: Zhang
+*描述：
+*/
+@Controller
+@RequestMapping("/system/hr")
+public class HrController {
+	
+	@Autowired
+	protected IDepartemtService departmentService;
+	/**
+	 * 部门页面控制器
+	 * @return
+	 */
+	@GetMapping("/department")
+	public String listDepartment(){
+		return "system/hr/listDepartment";
+	}
+
+	@PostMapping("listDepartment")
+	@ResponseBody
+	public JsonResult doListDepartment(PageBean<Department> page){
+		page=departmentService.findByPage(page);
+		return JsonResult.buildSuccessResult("操作成功", page);
+		
+	}
+}
+

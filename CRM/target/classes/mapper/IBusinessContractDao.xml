@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IBusinessContractDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.BusinessContract">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="contract_id" jdbcType="INTEGER" property="contractId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_r_business_contract
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.BusinessContract">
+    insert into tb_crm_r_business_contract (id, business_id, contract_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{contractId,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.BusinessContract">
+    update tb_crm_r_business_contract
+    set business_id = #{businessId,jdbcType=INTEGER},
+      contract_id = #{contractId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, business_id, contract_id
+    from tb_crm_r_business_contract
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, business_id, contract_id
+    from tb_crm_r_business_contract
+  </select>
+</mapper>

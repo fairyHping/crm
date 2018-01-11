@@ -1,0 +1,176 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=path%>">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+.td1 {
+	vertical-align: top;
+	font-size: 14px;
+	/* border: 2px red solid; */
+	margin-left: 20px;
+}
+
+#s{
+	padding-left: 20px;
+	
+}
+
+.span {
+	font-size: 14px;
+	color: red;
+	
+}
+
+#div1 {
+	background-color: #d9edf7;
+	width: 300px;
+	height: 60px;
+	padding-top: 20px;
+	border-radius: 5px;
+	margin-left: 20px;
+}
+
+#div2 {
+	border: 1px solid #d1d1d1;
+	width: 300px;
+
+	margin-left: 20px;
+}
+
+#div3 {
+	background-color: #d9edf7;
+	width: 300px;
+	height: 60px;
+	padding-top: 20px;
+	border-radius: 5px;
+	margin-left: 20px;
+}
+
+#div4 {
+	/* border: 1px solid #d */ 1d1d1
+	width: 300px;
+	
+	margin-left: 20px;
+}
+
+#div5 {
+	background-color: #f5f5f5;
+	border: 1px #d1d1d1 solid;
+	width: 300px;
+	margin-left: 20px
+}
+</style>
+</head>
+<body>
+	<form action="saveForm">
+	<div style="border: 1px solid;">
+		<table style="border: 1px solid">
+			<tr>
+				<td colspan="4" align="left"><h2>
+						当前剩余短信：<span style="color: red">-3 参数格式不正确条
+							请注意短信条数，余额不足将导致无法发送!</span>
+					</h2></td>
+			</tr>
+			<tr>
+				<td
+					style="background-color: #f5f5f5; border: 1px #d1d1d1 solid; width: 300px; padding-left: 20px"
+					class="td1">操作提示: <br> 1.手机号码标准格式为:<span class="span">13166337788</span><br>
+					<br> 2.群组发送短信时，以换行间隔每个客户，如<br> <span class="span">13166337788</span><br>
+					<span class="span">13166337799</span><br> <br>
+					3.如需在短信中加入姓名信息，请在短信内容中以<span class="span">{$name}</span>代替，<span
+					class="span">手机格式必须如下</span>: <br> <span class="span">13166337788,张三</span>
+					<br> <span class="span">13166337799,李四</span> <br> <br>
+					4.<span class="span">请不要在短息内容中填写特殊符号，包括换行符。</span> <br> <br>
+					5.短信内容不能多于65个字(其中空格 数字 字母 汉字均为一个字)<br> <br>
+					6.同一手机号间隔发送时间不得少于20秒<br> <br>
+					7.请仔细阅读页面右方的使用说明，请严格按照系统设定标准格式发送短信<br></td>
+				<td class="td1">
+				
+					<div id="div1">
+						
+						在此输入收件人手机号<br>注意：多个联系人换行隔开<br>
+					</div>
+					<div id="div2">
+						<textarea rows="35" cols="40"></textarea>
+					</div>
+				</td>
+				<td class="td1">
+				<div id="s">
+				<select id="s" name=templateId
+					data-options="required:true" id="selecttemplate"
+					style="width: 200px; height: 25px">
+						<option value="-1" selected="selected">--请选择短信模板--</option>
+						<c:forEach items="${requestScope.smstemplate}" var="smstemplate">
+							<option value="${smstemplate.templateId }"
+								${smstemplate.templateId eq requestScope.smstemplate.templateId ? "selected":""}>${smstemplate.templateId }</option>
+						</c:forEach>
+				</select> <a style="color: blue" href="toAddBusiness">设置</a>
+				</div>
+					<div id="div3">
+						在此输入短信内容<br>注意：<span class="span">请务必阅读左侧操作提示</span><br>
+					</div>
+					
+						<div id="div4">
+							<textarea rows="30" cols="40"></textarea>
+						</div>
+						<div id="s">
+						您还可以输入55个字。。。<br> <a id="add-button" class="easyui-linkbutton">发送</a>
+						 <input type="checkbox">定时发送</div>
+					</td>
+				<td class="td1"><div id="div5">
+						使用说明:<br> (您使用本系统发送短信，就表明您同意并接受以下内容)<br>1.不得发送包含以下内容、文字的短信息内容：非法的、骚扰性的、中伤他人的、辱骂性的、恐吓性的、
+						伤害性的、庸俗的、淫秽的信息；教唆他人构成犯罪行为的信息、危害国家安全的信息；及任何不符合国家法律、国际惯例、地方法律规定的信息。<br>
+						<br>2.不能违反运
+						营商规定，不得发送竞争对手产品的广告，不能按手机号段形式进行广告业务的宣传等，不能发送与本行业无关和移动运营商限制和禁止发送的短信内容，特别是广告类
+						信息，群发短信等，对违反此声明产生的一切后果由发送者及其单位承担。<br>
+						<br>3.最好不要在晚22:00至早7:00时段发送短信，以免引起客户反感。
+					</div>
+					
+					</td>
+			</tr>
+		</table>
+	</div>
+	</form>
+	
+	<script type="text/javascript">
+	//添加合同
+	$(function(){
+    	$("#add-button").on("click",function(){
+    		var isValid = $('#saveForm').form('validate');
+			if(!isValid){
+				return;
+			}	
+    		$.post("system/sale/listSmsRecord",
+				//序列化
+    	    	$("#saveForm").serialize(),function(data){
+    			if(data.success){
+       				parent.$.messager.alert({
+       					title:"提示",
+       					msg:data.message
+       				})
+       				parent.$("#topWindow").window("close")
+					//parent.doSearch()	
+     			}else{
+    				parent.$.messager.alert({
+	           			title:"提示",
+	           			msg:data.message
+			        })
+			     } 			
+    		},"json")    	    	
+    	})
+	})
+	</script>			
+	
+</body>
+</html>

@@ -1,0 +1,141 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<!DOCTYPE>
+<html>
+<head>
+<base href="<%=basePath%>">
+<meta charset="utf-8">
+<title>新建合同</title>
+<%@include file="../script.html"%>
+<style type="text/css">
+.t1 {
+	text-align: right;
+}
+input{
+	margin: 10px;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div align="center">
+	<form id="saveForm">
+		<table 
+			style="background: #DCDCDC; border-width: 0; border-collapse: 0; border-spacing: 0;width=100%;height: 560px" >
+			<tr>
+				<th align="left" style="font-size: 20px" colspan="4">基本信息</th>
+			</tr>
+			<tr>
+				<td class="t1">合同编号</td>
+				<td><input name="number" class="easyui-textbox textbox-radius" style="width:200px;padding: 5px"></td>
+				<td class="t1">签约时间</td>
+				<td><input name="dueDate" class="easyui-datebox" data-options="required:true" style="width: 200px;"/></td>
+			</tr>
+			<tr>
+				<td class="t1">来源商机</td>
+				<td> <select name="businessId" class="easyui-validatebox sj" data-options="required:true" id="selectBusiness" style="width:200px;height: 25px"> 
+						<option value="-1" selected="selected">请选择来源商机</option>
+						  <c:forEach items="${requestScope.businesss}" var="business">
+                            	<option value="${business.id }"  ${business.id eq requestScope.business.id ? "selected":""}>${business.name }</option>
+                            </c:forEach>        
+				</select> <a style="color: blue" href="toAddBusiness">&emsp;新建商机</a></td>
+				<td class="t1">联系人</td>
+				<td> <select name="contactsId" class="easyui-validatebox sj" data-options="required:true" id="selectcontacts" style="width:200px;height: 25px">
+						<option value="-1" selected="selected">请选择联系人</option>
+						<c:forEach items="${requestScope.contactss }" var="contacts">
+								<option value="${contacts.id }" ${contacts.id eq requestScope.contacts.id ? "selected":"" }>${contacts.name }</option>
+							</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="t1">来源客户</td>
+				<td >
+					 <select name="customerId" class="easyui-validatebox sj" data-options="required:true" id="selectcustomer" style="width:200px;height: 25px">
+						<option value="-1" selected="selected">请选择联系人</option>
+						<c:forEach items="${requestScope.customers }" var="customers">
+								<option value="${customer.customerId }" ${customer.customerId eq requestScope.customer.customerId ? "selected":"" }>${customer.name }</option>
+							</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="t1">负责人</td>
+				<td><input  name="ownerUserName" class="easyui-textbox textbox-radius" style="width:200px" value="${user.userName }"></td>
+				<td class="t1">合同金额(元)</td>
+				<td><input name="price" class="easyui-textbox textbox-radius" style="width:200px"></td>
+			</tr>
+			<tr>
+				<td class="t1">合同生效时间</td>
+				<td><input id="dd" name="startTime" type="text" class="easyui-datebox"
+					required="required" style="width:200px"></td>
+				<td class="t1">合同到期时间</td>
+				<td><input id="dd" name="endTime" type="text" class="easyui-datebox"
+					required="required" style="width:200px"></td>
+			</tr>
+			<tr>
+				<td class="t1">条件和条款</td>
+				<td colspan="3"	><input name="content" class="easyui-textbox" style="width:700px;height: 100px" multiline="true" > </td>
+			</tr>
+			<tr>
+				<td class="t1">合同描述(不多于150个字)</td>
+				<td colspan="3"><input name="description" class="easyui-textbox" style="width:700px;height: 100px" multiline="true" > </textarea></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><a id="save" href="javascript:void(0);" class="easyui-linkbutton"
+					data-options="iconCls:'icon-ok'">保存</a></td>
+				<td colspan="2"><a id="back" href="system/toListContract" class="easyui-linkbutton"
+				 data-options="iconCls:'icon-back'">返回</a></td>
+			</tr>
+		</table>
+
+	</form>
+	<script type="text/javascript">
+
+	
+
+	//添加合同
+	$(function(){
+    	$("#save").on("click",function(){
+    		var isValid = $('#saveForm').form('validate');
+			if(!isValid){
+				return;
+			}	
+    		$.post("system/contract/addContract",
+				//序列化
+    	    	$("#saveForm").serialize(),function(data){
+    			if(data.success){
+       				parent.$.messager.alert({
+       					title:"提示",
+       					msg:data.message
+       				})
+       				parent.$("#topWindow").window("close")
+					//parent.doSearch()	
+     			}else{
+    				parent.$.messager.alert({
+	           			title:"提示",
+	           			msg:data.message
+			        })
+			     } 			
+    		},"json")    	    	
+    	})
+	})
+ $(function(){
+	$("#back").on("click",function(){
+		parent.$("#topWindow").window("close");
+		})
+ })
+	
+	
+	
+	
+	
+	</script>
+	</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IPositionDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Position">
+    <id column="position_id" jdbcType="INTEGER" property="positionId" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_position
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Position">
+    insert into tb_crm_position (position_id, parent_id, name, 
+      department_id, description)
+    values (#{positionId,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{departmentId,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Position">
+    update tb_crm_position
+    set parent_id = #{parentId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR}
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select position_id, parent_id, name, department_id, description
+    from tb_crm_position
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select position_id, parent_id, name, department_id, description
+    from tb_crm_position
+  </select>
+</mapper>

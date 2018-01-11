@@ -1,0 +1,16 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Dictionary;
+
+public interface IDictionaryDao extends BaseDao<Dictionary> {
+
+	/**根据字典中的类型名查询对应的所有字典值
+	 * @param type
+	 * @return
+	 */
+	List<Dictionary> findStatus();
+    
+}

@@ -1,0 +1,108 @@
+
+package com.zhidi.system.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Leads;
+import com.zhidi.system.entity.User;
+import com.zhidi.system.service.ILeadsService;
+
+/**
+ * @author 作者:ZHP createTime 创建时间:2017年11月6日 类描述：
+ */
+@RequestMapping("/system/leads")
+@Controller
+public class LeadsController {
+
+	@Autowired
+	private ILeadsService leadsService;
+
+	@GetMapping("/list")
+	public String toListLeads() {
+
+		return "system/leads/listLeads";
+	}
+
+	@PostMapping("/listLeads")
+	@ResponseBody
+	public JsonResult listLeads(PageBean<Leads> page) {
+		page.getCondition().put("isDeleted", 1);
+		page.getCondition().put("owner", 0);// 有负责人
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+
+	@GetMapping("/addLeads")
+	public String toAddLeads() {
+		return "system/leads/addLeads";
+	}
+
+	@PostMapping("/addLeads")
+	@ResponseBody
+	public JsonResult addLeads(Leads leads, HttpSession session) {
+		if (leads == null) {
+			return JsonResult.buildFailureResult(-200, "添加线索失败");
+		}
+		User user = (User) session.getAttribute("user");
+		leads.setIsDeleted(1);
+		leads.setCreatorUserId(user.getUserId());
+		leads.setCreateTime(new Date());
+		leads.setUpdateTime(new Date());
+		leads.setIsTransformed(0);
+		leads.setHaveTime(new Date());
+		Integer rows = leadsService.save(leads);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("添加线索成功！");
+		} else {
+			return JsonResult.buildFailureResult(-200, "添加线索失败!");
+		}
+
+	}
+
+	@GetMapping("/pool")
+	public String toListPoolLeads() {
+
+		return "system/leads/leadsPool";
+	}
+
+	@PostMapping("/listPool")
+	@ResponseBody
+	public JsonResult listPoolLeads(PageBean<Leads> page) {
+		page.getCondition().put("owner", 1);
+		page.getCondition().put("isDeleted", 1);
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+
+	@GetMapping("/leadsRecycle")
+	public String toLeadsRecycle() {
+		return "system/leads/leadsRecycle";
+	}
+
+	@PostMapping("/listLeadsRecycle")
+	@ResponseBody
+	public JsonResult listLeadsRecycle(PageBean<Leads> page) {
+
+		Map<String, Object> condition = page.getCondition();
+		if (condition == null || condition.isEmpty()) {
+			condition = new HashMap<>();
+		}
+		condition.put("isDeleted", 0);
+		page.setCondition(condition);
+		page = leadsService.findByPage(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+}

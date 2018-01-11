@@ -1,0 +1,67 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+	String basePath =request.getContextPath();//获取应用程序的根路径
+	//获取应用程序的全路径
+	String path=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";	
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href=<%=path%>>
+<meta charset="UTF-8">
+<%@include file="../../script.html"%>
+<title>权限信息</title>
+<style type="text/css">
+.t1{
+	text-align: right;
+	padding-left:20px;
+	line-height: 35px;
+}
+</style>
+</head>
+<body style="max-width: 660px;">
+	<div style="width:100%;margin-top:30px"
+		align="center" >
+
+		<form id="saveForm">
+			<div title="权限详细信息" class="easyui-panel" style="width:90%;" align="center">
+				<table style="width:90%;margin: 10px;" align="center">
+				<tr>
+						<td class="t1" class="text-title">权限名称:</td>
+						<td>
+						${func.funcName}</td>
+						<td class="t1" class="text-title">权限URL:</td>
+						<td>${func.funcUrl}</td>
+					</tr>
+					<tr>
+						<td class="t1" class="text-title">权限编码:</td>
+						<td>${func.funcCode }</td>
+						<td class="t1" class="text-title">父权限:</td>
+						<td>${func.parentFunction.funcName }</td>
+					</tr>
+					<tr>
+						<td class="t1" class="text-title">权限类型:</td>
+						<td>
+						${func.funcType==1?'菜单权限':'按钮权限'}
+						<td class="t1" class="text-title">权限状态:</td>
+						<td>
+						${func.status==1? '正常':func.status==0?'已禁用':'已删除'}
+						</td>
+					</tr>
+					<tr>
+						<td class="t1" class="text-title">创建时间:</td>
+						<td>${func.createTime}</td>
+						<td class="t1" class="text-title">修改时间:</td>
+						<td>
+						${func.updateTime}</td>
+					</tr>
+				</table>
+				
+			</div>
+		</form>
+
+	</div>
+</body>
+</html>

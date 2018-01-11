@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ISmsTemplateDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.SmsTemplate">
+    <id column="template_id" jdbcType="INTEGER" property="templateId" />
+    <result column="template_code" jdbcType="VARCHAR" property="templateCode" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_sms_template
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.SmsTemplate">
+    insert into tb_crm_sms_template (template_id, template_code, subject, 
+      content, order_id)
+    values (#{templateId,jdbcType=INTEGER}, #{templateCode,jdbcType=VARCHAR}, #{subject,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.SmsTemplate">
+    update tb_crm_sms_template
+    set template_code = #{templateCode,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=INTEGER}
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select template_id, template_code, subject, content, order_id
+    from tb_crm_sms_template
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select template_id, template_code, subject, content, order_id
+    from tb_crm_sms_template
+  </select>
+</mapper>

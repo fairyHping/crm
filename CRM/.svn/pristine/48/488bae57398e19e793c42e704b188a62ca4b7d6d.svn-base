@@ -1,0 +1,49 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Function;
+
+public interface IFunctionDao extends BaseDao<Function> {
+    
+	/**
+	 * 根据角色id和权限状态查询对应的权限信息
+	 * @param roleIds -角色id
+	 * @param status -权限状态  ：1表示正常，0表示禁用，2表示删除
+	 * @return -返回值为List<Function>
+	 */
+	List<Function> findByRoleIds(@Param("roleIds")List<Integer> roleIds,@Param("status") Integer status);
+
+	/**
+	 * 根据父权限id和角色id获取权限信息
+	 * @param id -父权限id
+	 * @param roleIds -角色id的集合
+	 * @param funcType -权限类型 ：1表示菜单权限，0表示按钮权限
+	 * @return 返回值为List<Function>
+	 */
+	List<Function> findByIdAndRoleIds(@Param("parentId")Integer id, @Param("roleIds")List<Integer> roleIds, @Param("funcType")Integer funcType);
+
+	/**
+	 * @return
+	 */
+	List<Function> listParentFunction();
+
+	/**
+	 * 根据角色id和权限状态查询对应的权限信息
+	 * @param roleId
+	 * @param status
+	 * @return
+	 */
+	List<Function> findByRoleId(@Param("roleId")Integer roleId, @Param("status")Integer status);
+
+	/**
+	 * 根据权限Id删除对应的用户，可批量删除
+	 * @param funcIds-权限id的集合 
+	 * @return
+	 */
+	Integer deleteFunction(@Param("funcIds")List<Integer> funcIds);
+
+}

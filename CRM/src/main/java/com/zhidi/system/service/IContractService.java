@@ -1,0 +1,11 @@
+package com.zhidi.system.service;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.Contract;
+
+public interface IContractService extends BaseService<Contract> {
+
+	Integer deleteContract(String contractIds);
+	
+	Integer findMaxId();
+}

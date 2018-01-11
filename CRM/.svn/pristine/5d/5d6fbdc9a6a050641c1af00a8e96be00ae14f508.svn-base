@@ -1,0 +1,399 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@taglib prefix="acl" uri="http://www.zhidisoft.com/taglib/acl"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=path%>">
+<meta charset="UTF-8">
+<title>线索管理</title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+a {
+	text-decoration: none;
+}
+
+#ul li:hover {
+	cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+	<div>
+		<div id="toolbar" style="padding-top: 10px;">
+			<select style="color: gray" class="easyui-combobox" name="source"
+				id="source">
+				<option value="">--请选择筛选条件--</option>
+				<option value="name">公司名</option>
+				<option value="contactsName">联系人</option>
+				<option value="creatorName">创建人</option>
+			</select> <input class="easyui-textbox" name="content" id="content"> <a
+				id="searchBtn" class="easyui-linkbutton"
+				data-options="iconCls:'icon-search',plain:true">搜索</a> <a
+				class="easyui-linkbutton" id="resetButton"
+				data-options="iconCls:'icon-undo',plain:true">重置</a> <a id="sendSms"
+				class="easyui-linkbutton"
+				data-options="iconCls:'icon-large_smartart',plain:true">发送短信</a> <a
+				id="receiveEmail" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">接收邮件</a> <span
+				style="float: right"> 
+				<acl:hasPermission code="system:leads:pool:assign">
+				<input name="ownerUserId" class="easyui-combobox" id="ownerUserId"> 
+					<a id="assignBtn" class="easyui-linkbutton"
+						data-options="iconCls:'icon-man',plain:true">线索分配</a>
+				</acl:hasPermission> 
+				<acl:hasPermission code="system:leads:pool:delete">
+					<a id="removeBtn" class="easyui-linkbutton"
+						data-options="iconCls:'icon-remove',plain:true">删除</a>
+				</acl:hasPermission>
+				
+				
+				<acl:hasPermission code="system:leads:pool:add">
+					<a id="addBtn" class="easyui-linkbutton"
+						data-options="iconCls:'icon-add',plain:true">新建线索</a>
+				</acl:hasPermission> <a id="customer" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">客户工具</a>
+			</span>
+		</div>
+	</div>
+	<table id="leadsPoolList" style="width: 100%">
+	</table>
+	<script type="text/javascript">
+		$(function() {
+			$("#addBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//打开新窗口，新窗口中展示角色列表页面
+				parent.openTopWindow({
+					width : 800,
+					height : 500,
+					title : "添加线索",
+					url : "system/leads/addLeads",
+					onClose : function() {
+						$("#leadsPoolList").datagrid("reload");
+						$("#leadsPoolList").datagrid("uncheckAll");
+					}
+
+				});
+
+			});
+
+			/* 按条件查询*/
+			$("#searchBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				var source = $("#source").combobox("getValue");
+				var content = $("#content").textbox("getText");
+				$("#leadsPoolList").datagrid("load", {
+					"condition" : {
+						"source" : source,
+						"content" : content
+					}
+				});
+
+			});
+
+			/* 批量删除 */
+			$("#removeBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//获取选中的线索，选中的是一整行数据		  
+				var rows = $("#leadsPoolList").datagrid("getChecked");
+				//没有选中某一个用户时进行提示
+				if (!rows || rows.length < 1) {
+					parent.$.messager.alert("警告", "必须选中线索！", "warning");
+					return;
+				}
+				//获取选中的线索的id
+				var leadsIds = new Array();
+				$.each(rows, function(index, obj) {
+					if (obj) {
+						leadsIds.push(obj.leadsId);
+					}
+				});
+				parent.$.messager.confirm('操作提示', '确定要删除吗?', function(r) {
+					if (r) {
+						$.post("system/leads/deleteBatch", {
+							"leadsIds" : leadsIds.join(",")
+						}, function(data) {
+							if (data.success) {
+								parent.$.messager.show({
+									"title" : "提示",
+									"msg" : data.message,
+									"timeout" : 6000
+								})
+								$("#leadsPoolList").datagrid("reload");
+							} else {
+								parent.$.messager.alert({
+									title : "提示",
+									msg : data.message
+								})
+							}
+						}, "json")
+					}
+				});
+
+			});
+			
+			
+			/* 批量分配 */
+			$("#assignBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//获取选中的线索，选中的是一整行数据		  
+				var rows = $("#leadsPoolList").datagrid("getChecked");
+				//没有选中某一个用户时进行提示
+				if (!rows || rows.length < 1) {
+					parent.$.messager.alert("警告", "必须选中线索！", "warning");
+					return;
+				}
+				//获取要分配的用户的id
+				var userId=$("#ownerUserId").combobox("getValue");
+				//获取选中的线索的id
+				var leadsIds = new Array();
+				$.each(rows, function(index, obj) {
+					if (obj) {
+						leadsIds.push(obj.leadsId);
+					}
+				});
+				
+						$.post("system/leads/assignBatch", {
+							"leadsIds" : leadsIds.join(","),
+							"userId":userId
+						}, function(data) {
+							if (data.success) {
+								parent.$.messager.show({
+									"title" : "提示",
+									"msg" : data.message,
+									"timeout" : 6000
+								})
+								$("#leadsPoolList").datagrid("reload");
+							} else {
+								parent.$.messager.alert({
+									title : "提示",
+									msg : data.message
+								})
+							}
+						}, "json")
+
+			});
+
+		});
+
+		$(function() {
+			
+			/* 获取所有用户信息 */
+			$('#ownerUserId').combobox({
+				"url" : "system/users/listAll",
+				"valueField" : 'userId',
+				"textField" : 'userName',
+				"loadFilter" : function(data) {
+					if (data && data.success) {
+						return data.result;
+					}
+					return null;
+				}
+			});
+			$("#leadsPoolList")
+					.datagrid(
+							{
+								url : "system/leads/listPool",
+								toolbar : "#toolbar",
+								pagination : true,
+								fitColumns : true,
+								rownumbers : true,
+								idField : "leadsId",
+								columns : [ [
+										{
+											field : 'leadsId',
+											width : 60,
+											align : 'center',
+											checkbox : true
+										},
+										{
+											field : 'name',
+											title : '公司名',
+											width : 60
+										},
+										{
+											field : 'contactsName',
+											title : '联系人姓名',
+											width : 60
+										},
+										{
+											field : 'saltname',
+											title : '尊称',
+											width : 60
+										},
+										{
+											field : 'mobile',
+											title : '手机',
+											width : 60
+										},
+										{
+											field : 'nextstepTime',
+											title : '下次联系时间',
+											width : 60
+										},
+										{
+											field : 'nextstep',
+											title : '下次联系内容',
+											width : 60
+										},
+										{
+											field : 'ownerUser',
+											title : '负责人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'creatorUser',
+											title : '创建人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'createTime',
+											title : '创建时间',
+											width : 60
+										},
+										{
+											field : 'operation',
+											title : '操作',
+											width : 100,
+											align : 'center',
+											formatter : function(value,
+													rowData, index) {
+												
+												var links = "";
+							
+													links = links+"<a href='javascript:void(0)' onclick='detail("
+														+ rowData.leadsId
+														+ ")'>查看</a>&nbsp;";
+												<acl:hasPermission code="system:leads:pool:transform">
+													links = links+"<a href='javascript:void(0)'  onclick='transform("
+													+ rowData.leadsId
+													+ ")'>转换</a>&nbsp;";
+												</acl:hasPermission>
+												<acl:hasPermission code="system:leads:pool:get">
+													links = links+"<a href='javascript:void(0)'  onclick='get("
+													+ rowData.leadsId
+													+ ")'>领取</a>&nbsp;";
+												</acl:hasPermission>
+												return links;
+												}	
+										} ] ],
+								loadFilter : function(data) {
+									if (data && data.result) {
+										return data.result;
+									}
+									return null;
+								}
+							});
+			$("#resetButton").on("click", function(event) {
+
+				event.preventDefault();
+				$("#content").textbox("clear");
+				$('#source').combobox("setValue", "--请选择筛选条件--");
+			})
+		});
+		
+
+		/* 线索详情 */
+		function detail(leadsId) {
+			//打开新窗口，新窗口中展示线索详情页面
+			parent.openTopWindow({
+				width : 750,
+				height : 450,
+				title : "角色信息",
+				url : "system/leads/leadsInfo?leadsId=" + leadsId,
+				onClose : function() {
+					$("#leadsList").datagrid("uncheckAll");
+				}
+			});
+		}
+		
+		/* 修改对应的线索 */
+		/* function update(leadsId){
+			//打开新窗口，新窗口中展示修改线索页面
+			parent.openTopWindow({
+				width : 780,
+				height : 480,
+				title : "修改线索信息",
+				url : "system/leads/updateLeads?leadsId=" + leadsId,
+				onClose : function() {
+					$("#leadsPoolList").datagrid("reload");
+					$("#leadsPoolList").datagrid("uncheckAll");
+				}
+			});		
+		} */
+		
+		/* 领取线索，即将线索负责人设为当前登录的用户 */
+		function get(leadsId){
+			$.post("system/leads/getLeads", {
+				"leadsId" : leadsId
+			}, function(data) {
+				if (data.success) {
+					parent.$.messager.show({
+						"title" : "提示",
+						"msg" : data.message,
+						"timeout" : 6000
+					})
+					$("#leadsPoolList").datagrid("reload");
+					$("#leadsPoolList").datagrid("uncheckAll");
+				} else {
+					parent.$.messager.alert({
+						title : "提示",
+						msg : data.message
+					})
+				}
+			}, "json");
+			
+			
+			
+		}
+		
+		/* 进行线索转换 */
+		function transform(leadsId){
+			$.post("system/leads/leadsTransform", {
+				"leadsIds" : leadsId
+			}, function(data) {
+				if (data.success) {
+					parent.$.messager.show({
+						"title" : "提示",
+						"msg" : data.message,
+						"timeout" : 6000
+					})
+					$("#leadsPoolList").datagrid("reload");
+					$("#leadsPoolList").datagrid("uncheckAll");
+				} else {
+					parent.$.messager.alert({
+						title : "提示",
+						msg : data.message
+					})
+				}
+			}, "json");
+
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+package com.zhidi.system.entity;
+
+public class Dictionary {
+    private Integer dicId;
+
+    private String type;
+
+    private String valueName;
+
+    private String value;
+
+    public Integer getDicId() {
+        return dicId;
+    }
+
+    public void setDicId(Integer dicId) {
+        this.dicId = dicId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
+    }
+
+    public String getValueName() {
+        return valueName;
+    }
+
+    public void setValueName(String valueName) {
+        this.valueName = valueName == null ? null : valueName.trim();
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+}

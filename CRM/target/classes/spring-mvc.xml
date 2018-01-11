@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<context:component-scan base-package="com.zhidi.**.controller" />
+	<mvc:annotation-driven conversion-service="converterService">
+		<mvc:message-converters>
+		<!-- 注入自定义的对象转换器，应用程序中会按照自定义的日期时间格式转换 -->
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<constructor-arg>
+					<bean class="com.zhidi.spring.jackson.JacksonObjectMapper"></bean>
+				</constructor-arg>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- 配置访问静态资源由默认servlet控制 -->
+	<mvc:default-servlet-handler />
+	<!-- 配置视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/content/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 配置自定义的类型转换服务器工厂bean -->
+	<bean id="converterService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<!-- 定义一个内部bean -->
+				<bean class="com.zhidi.util.DateConverter">
+					<!-- 定义被转换的字符串模式 -->
+					<property name="pattern" value="yyyy-MM-dd" />
+				</bean>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- 配置文件上传解析器，注意：必须配置id，且id的值必须为固定值 multipartResolver -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="5242880" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+</beans>

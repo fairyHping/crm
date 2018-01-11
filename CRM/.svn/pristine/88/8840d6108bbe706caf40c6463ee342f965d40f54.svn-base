@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ILeadsDao">
+	<resultMap id="BaseResultMap" type="com.zhidi.system.entity.Leads">
+		<id column="leads_id" jdbcType="INTEGER" property="leadsId" />
+		<result column="owner_user_id" jdbcType="INTEGER" property="ownerUserId" />
+		<result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="position" jdbcType="VARCHAR" property="position" />
+		<result column="contacts_name" jdbcType="VARCHAR" property="contactsName" />
+		<result column="saltname" jdbcType="VARCHAR" property="saltname" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+		<result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+		<result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+		<result column="is_transformed" jdbcType="INTEGER" property="isTransformed" />
+		<result column="transform_user_id" jdbcType="INTEGER" property="transformUserId" />
+		<result column="contacts_id" jdbcType="INTEGER" property="contactsId" />
+		<result column="customer_id" jdbcType="INTEGER" property="customerId" />
+		<result column="business_id" jdbcType="INTEGER" property="businessId" />
+		<result column="nextstep" jdbcType="VARCHAR" property="nextstep" />
+		<result column="nextstep_time" jdbcType="TIMESTAMP" property="nextstepTime" />
+		<result column="have_time" jdbcType="TIMESTAMP" property="haveTime" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="source" jdbcType="VARCHAR" property="source" />
+		<result column="leadnote" jdbcType="VARCHAR" property="leadnote" />
+	</resultMap>
+
+	<resultMap type="com.zhidi.system.entity.Leads" id="LeadsResultMap"
+		extends="BaseResultMap">
+		<association property="ownerUser"
+			resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="o_" />
+		<association property="creatorUser"
+			resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="c_" />
+		<association property="deleteUser"
+			resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="d_" />
+		<association property="transformUser"
+			resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="t_" />
+	</resultMap>
+
+	<sql id="leadsAllColumns">
+		l.leads_id, l.owner_user_id, l.creator_user_id, l.name,
+		l.position,
+		l.contacts_name,
+		l.saltname, l.mobile, l.email,
+		l.create_time, l.update_time, l.is_deleted,
+		l.delete_user_id,
+		l.delete_time, l.is_transformed, l.transform_user_id, l.contacts_id,
+		l.customer_id,
+		l.business_id,
+		l.nextstep, l.nextstep_time, l.have_time,
+		l.address, l.source, l.leadnote
+	</sql>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		tb_crm_leads
+		where leads_id = #{leadsId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.zhidi.system.entity.Leads">
+		insert into tb_crm_leads
+		(owner_user_id, creator_user_id,
+		name, position,
+		contacts_name,
+		saltname, mobile, email,
+		create_time, update_time,
+		is_deleted,
+		delete_user_id, delete_time, is_transformed,
+		transform_user_id,
+		contacts_id, customer_id,
+		business_id, nextstep,
+		nextstep_time,
+		have_time, address, source,
+		leadnote)
+		values
+		(#{ownerUserId,jdbcType=INTEGER},
+		#{creatorUserId,jdbcType=INTEGER},
+		#{name,jdbcType=VARCHAR},
+		#{position,jdbcType=VARCHAR},
+		#{contactsName,jdbcType=VARCHAR},
+		#{saltname,jdbcType=VARCHAR},
+		#{mobile,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{isDeleted,jdbcType=INTEGER},
+		#{deleteUserId,jdbcType=INTEGER},
+		#{deleteTime,jdbcType=TIMESTAMP},
+		#{isTransformed,jdbcType=INTEGER},
+		#{transformUserId,jdbcType=INTEGER}, #{contactsId,jdbcType=INTEGER},
+		#{customerId,jdbcType=INTEGER},
+		#{businessId,jdbcType=INTEGER},
+		#{nextstep,jdbcType=VARCHAR}, #{nextstepTime,jdbcType=TIMESTAMP},
+		#{haveTime,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR},
+		#{source,jdbcType=VARCHAR},
+		#{leadnote,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Leads">
+		update
+		tb_crm_leads
+		set owner_user_id = #{ownerUserId,jdbcType=INTEGER},
+		creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+		name =
+		#{name,jdbcType=VARCHAR},
+		position = #{position,jdbcType=VARCHAR},
+		contacts_name = #{contactsName,jdbcType=VARCHAR},
+		saltname =
+		#{saltname,jdbcType=VARCHAR},
+		mobile = #{mobile,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		is_deleted =
+		#{isDeleted,jdbcType=INTEGER},
+		delete_user_id =
+		#{deleteUserId,jdbcType=INTEGER},
+		delete_time =
+		#{deleteTime,jdbcType=TIMESTAMP},
+		is_transformed =
+		#{isTransformed,jdbcType=INTEGER},
+		transform_user_id =
+		#{transformUserId,jdbcType=INTEGER},
+		contacts_id =
+		#{contactsId,jdbcType=INTEGER},
+		customer_id =
+		#{customerId,jdbcType=INTEGER},
+		business_id =
+		#{businessId,jdbcType=INTEGER},
+		nextstep =
+		#{nextstep,jdbcType=VARCHAR},
+		nextstep_time =
+		#{nextstepTime,jdbcType=TIMESTAMP},
+		have_time =
+		#{haveTime,jdbcType=TIMESTAMP},
+		address = #{address,jdbcType=VARCHAR},
+		source = #{source,jdbcType=VARCHAR},
+		leadnote =
+		#{leadnote,jdbcType=VARCHAR}
+		where leads_id =
+		#{leadsId,jdbcType=INTEGER}
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="LeadsResultMap">
+		select
+		<include refid="leadsAllColumns" />
+		,
+		o.user_name o_user_name,
+		c.user_name c_user_name,
+		d.user_name
+		d_user_name
+		from tb_crm_leads l
+		left join tb_users o
+		on
+		l.owner_user_id=o.user_id
+		left join tb_users c
+		on
+		l.creator_user_id=c.user_id
+		left join tb_users d
+		on
+		l.delete_user_id=d.user_id
+		left join tb_users t
+		on
+		l.transform_user_id=t.user_id
+		where l.leads_id =
+		#{leadsId,jdbcType=INTEGER}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select leads_id, owner_user_id,
+		creator_user_id, name, position,
+		contacts_name, saltname,
+		mobile, email,
+		create_time, update_time, is_deleted, delete_user_id,
+		delete_time,
+		is_transformed, transform_user_id, contacts_id, customer_id,
+		business_id, nextstep,
+		nextstep_time, have_time, address, source,
+		leadnote
+		from tb_crm_leads
+	</select>
+	<select id="count" resultType="integer">
+		select count(leads_id)
+		from tb_crm_leads l
+		left join tb_users o
+		on
+		l.owner_user_id=o.user_id
+		left
+		join tb_users c
+		on
+		l.creator_user_id=c.user_id
+		left join tb_users d
+		on
+		l.delete_user_id=d.user_id
+		left join tb_users t
+		on
+		l.transform_user_id=t.user_id
+		where 1=1
+				<if test="con!=null and !con.isEmpty()">
+			<if test="con.isDeleted!=null">
+				<if test="con.isDeleted==1">
+					and l.is_deleted=1
+					<if test="con.owner==0">
+						and l.owner_user_id is not null
+					</if>
+					<if test="con.owner==1">
+						and l.owner_user_id is null
+					</if>
+					<if test="con.li=='今日需联系'">
+						and to_days(l.nextstep_time)=to_days(now())
+					</if>
+					<if test="con.li=='本周需联系'">
+						and
+						yearweek(date_format(l.nextstep_time,'%y-%m-%d'))=yearweek(now())
+					</if>
+					<if test="con.li=='本月需联系'">
+						and
+						date_format(l.nextstep_time,'%y-%m')=date_format(now(),'%y-%m')
+					</if>
+					<if test="con.li=='7日未联系'">
+						and to_days(now())-to_days(l.update_time)>=7
+					</if>
+					<if test="con.li=='15日未联系'">
+						and to_days(now())-to_days(l.update_time)>=15
+					</if>
+					<if test="con.li=='30日未联系'">
+						and to_days(now())-to_days(l.update_time)>=30
+					</if>
+					<if test="con.li=='最近创建'">
+						and to_days(now())-to_days(l.create_time)&lt;=3
+					</if>
+					<if test="con.li=='最近修改'">
+						and to_days(now())-to_days(l.update_time)&lt;=3
+					</if>
+					<if test="con.li=='我负责的'">
+						and l.owner_user_id=#{con.ownerUserId}
+					</if>
+					<if test="con.li=='已转换线索'">
+						and l.is_transformed=0
+					</if>
+					<if test="con.li=='下属负责的'">
+						and l.owner_user_id in(
+						select user_id from tb_crm_employee 
+							where mgr_id=(
+								select emp_id from tb_crm_employee where user_id=#{con.ownerUserId}
+							)
+						)
+					</if>
+					<if test="con.li=='下属创建'">
+						and l.creator_user_id in(
+						select user_id from tb_crm_employee 
+							where mgr_id=(
+								select emp_id from tb_crm_employee where user_id=#{con.ownerUserId}
+							)
+						)
+					</if>
+				</if>
+				<if test="con.isDeleted==0">
+					and l.is_deleted =0
+				</if>
+			</if>
+			<if test="con.source!=null and con.source!=''">
+				<if test="con.source=='name'">
+					and l.name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='contactsName'">
+					and l.contacts_name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='ownerName'">
+					and o.user_name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='creatorName'">
+					and c.user_name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</if>
+
+	</select>
+	<select id="findByPage" resultMap="LeadsResultMap">
+		select
+		<include refid="leadsAllColumns" />
+		,
+		o.user_name o_user_name,
+		c.user_name c_user_name,
+		d.user_name
+		d_user_name
+		from tb_crm_leads l
+		left join tb_users o
+		on
+		l.owner_user_id=o.user_id
+		left join tb_users c
+		on
+		l.creator_user_id=c.user_id
+		left join tb_users d
+		on
+		l.delete_user_id=d.user_id
+		left join tb_users t
+		on
+		l.transform_user_id=t.user_id
+		where 1=1
+		<if test="con!=null and !con.isEmpty()">
+			<if test="con.isDeleted!=null">
+				<if test="con.isDeleted==1">
+					and l.is_deleted=1
+					<if test="con.owner==0">
+						and l.owner_user_id is not null
+					</if>
+					<if test="con.owner==1">
+						and l.owner_user_id is null
+					</if>
+					<if test="con.li=='今日需联系'">
+						and to_days(l.nextstep_time)=to_days(now())
+					</if>
+					<if test="con.li=='本周需联系'">
+						and
+						yearweek(date_format(l.nextstep_time,'%y-%m-%d'))=yearweek(now())
+					</if>
+					<if test="con.li=='本月需联系'">
+						and
+						date_format(l.nextstep_time,'%y-%m')=date_format(now(),'%y-%m')
+					</if>
+					<if test="con.li=='7日未联系'">
+						and to_days(now())-to_days(l.update_time)>=7
+					</if>
+					<if test="con.li=='15日未联系'">
+						and to_days(now())-to_days(l.update_time)>=15
+					</if>
+					<if test="con.li=='30日未联系'">
+						and to_days(now())-to_days(l.update_time)>=30
+					</if>
+					<if test="con.li=='最近创建'">
+						and to_days(now())-to_days(l.create_time)&lt;=3
+					</if>
+					<if test="con.li=='最近修改'">
+						and to_days(now())-to_days(l.update_time)&lt;=3
+					</if>
+					<if test="con.li=='我负责的'">
+						and l.owner_user_id=#{con.ownerUserId}
+					</if>
+					<if test="con.li=='已转换线索'">
+						and l.is_transformed=0
+					</if>
+					<if test="con.li=='下属负责的'">
+						and l.owner_user_id in(
+						select user_id from tb_crm_employee 
+							where mgr_id=(
+								select emp_id from tb_crm_employee where user_id=#{con.ownerUserId}
+							)
+						)
+					</if>
+					<if test="con.li=='下属创建'">
+						and l.creator_user_id in(
+						select user_id from tb_crm_employee 
+							where mgr_id=(
+								select emp_id from tb_crm_employee where user_id=#{con.ownerUserId}
+							)
+						)
+					</if>
+				</if>
+				<if test="con.isDeleted==0">
+					and l.is_deleted =0
+				</if>
+			</if>
+			<if test="con.source!=null and con.source!=''">
+				<if test="con.source=='name'">
+					and l.name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='contactsName'">
+					and l.contacts_name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='ownerName'">
+					and o.user_name like concat("%",#{con.content},"%")
+				</if>
+				<if test="con.source=='creatorName'">
+					and c.user_name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</if>
+		limit #{offset},#{pageSize}
+	</select>
+
+	<!-- 逻辑删除线索，可批量删除 -->
+	<update id="deleteBatch">
+		update tb_crm_leads set is_deleted =0
+		where leads_id in
+		<foreach collection="leadsIds" item="leadsId" open="(" close=")"
+			separator=",">
+			#{leadsId}
+		</foreach>
+	</update>
+	<!-- 将线索放入线索池，可批量放入 -->
+	<update id="toPoolBatch">
+		update tb_crm_leads set owner_user_id = null
+		where leads_id in
+		<foreach collection="leadsIds" item="leadsId" open="(" close=")"
+			separator=",">
+			#{leadsId}
+		</foreach>
+	</update>
+	<!-- 根据线索id将线索从回收站撤回 -->
+	<update id="withdrawLeads">
+		update tb_crm_leads set is_deleted =1
+		where leads_id in
+		<foreach collection="leadsIds" item="leadsId" open="(" close=")"
+			separator=",">
+			#{leadsId}
+		</foreach>
+	</update>
+	<!-- 根据线索id进行线索转换 -->
+	<update id="leadsTransform">
+		update tb_crm_leads set is_transformed=0,transform_user_id=#{userId}
+		where leads_id =
+			#{leadsId}
+	</update>
+	<!-- 当前用户领取线索池中的线索 -->
+	<update id="getLeads">
+		update tb_crm_leads set owner_user_id =#{userId}
+		where leads_id =#{leadsId}
+	</update>
+	<!-- 给用户分配线索，可批量分配 -->
+	<update id="assignBatch">
+		update tb_crm_leads set owner_user_id =#{userId}
+		where leads_id in
+		<foreach collection="leadsIds" item="leadsId" open="(" close=")"
+			separator=",">
+			#{leadsId}
+		</foreach>
+	</update>
+	
+</mapper>

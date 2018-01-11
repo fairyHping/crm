@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ICustomerDao">
+	<resultMap id="BaseResultMap" type="com.zhidi.system.entity.Customer">
+		<id column="customer_id" jdbcType="INTEGER" property="customerId" />
+		<result column="owner_user_id" jdbcType="INTEGER" property="ownerUserId" />
+		<result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+		<result column="contacts_id" jdbcType="INTEGER" property="contactsId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="origin" jdbcType="VARCHAR" property="origin" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+		<result column="industry" jdbcType="VARCHAR" property="industry" />
+		<result column="annual_revenue" jdbcType="VARCHAR" property="annualRevenue" />
+		<result column="ownership" jdbcType="VARCHAR" property="ownership" />
+		<result column="rating" jdbcType="VARCHAR" property="rating" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+		<result column="is_locked" jdbcType="INTEGER" property="isLocked" />
+		<result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+		<result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+	</resultMap>
+	
+	<resultMap type="com.zhidi.system.entity.Customer" id="CustomerResultMap" extends="BaseResultMap">
+		<association property="user" column="ownerUserId" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="cu_"/>
+		<association property="cUser" column="creatorUserId" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="u_"/>
+	
+	</resultMap>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from tb_crm_customer
+		where customer_id = #{customerId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insertPool">
+		insert into tb_crm_customer ( owner_user_id,
+		 name,industry,origin,ownership,zip_code,
+         creator_user_id,rating,create_time,update_time,address
+		)
+		values ( #{ownerUserId,jdbcType=INTEGER},
+		#{name,jdbcType=VARCHAR},#{industry,jdbcType=VARCHAR},
+		#{origin,jdbcType=VARCHAR},#{ownership,jdbcType=VARCHAR},
+		#{zipCode,jdbcType=VARCHAR},#{annualRevenue,jdbcType=VARCHAR},
+		#{creatorUserId,jdbcType=VARCHAR},#{rating,jdbcType=VARCHAR},
+		#{createTime,jdbcType=VARCHAR},#{updateTime,jdbcType=VARCHAR}
+		 #{address,jdbcType=VARCHAR} 
+		)
+	</insert>
+	<insert id="insert" parameterType="com.zhidi.system.entity.Customer">
+		insert into tb_crm_customer ( owner_user_id,
+		 name,industry,origin,ownership,zip_code,creator_user_id,rating,create_time,update_time,address
+		)
+		values ( #{ownerUserId,jdbcType=INTEGER},
+		#{name,jdbcType=VARCHAR},#{industry,jdbcType=VARCHAR},
+		#{origin,jdbcType=VARCHAR},#{ownership,jdbcType=VARCHAR},
+		#{zipCode,jdbcType=VARCHAR},#{creatorUserId,jdbcType=VARCHAR},
+		#{rating,jdbcType=VARCHAR},#{createTime,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=VARCHAR},
+		 #{address,jdbcType=VARCHAR} 
+		 )
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Customer">
+		update tb_crm_customer
+		set 
+	    name = #{name,jdbcType=VARCHAR}, 
+		industry = #{industry,jdbcType=VARCHAR},
+		rating = #{rating,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		zip_code = #{zipCode,jdbcType=VARCHAR},
+		owner_user_id = #{ownerUserId,jdbcType=VARCHAR},
+		creator_user_id = #{creatorUserId,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=VARCHAR},
+		update_time = #{updateTime,jdbcType=VARCHAR}
+		where customer_id = #{customerId,jdbcType=INTEGER} 
+		
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="CustomerResultMap">
+		select
+		c.customer_id,
+		c.name,
+		c.industry,
+		c.rating,
+		c.address,
+		c.zip_code,
+		c.owner_user_id,
+		c.creator_user_id,
+		c.create_time,
+		c.update_time,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.user_id   as cu_user_id, 
+		cu.user_name   as cu_user_name,
+		cu.password   as   cu_password,
+		cu.salt   as  cu_salt,
+		cu.phone   as   cu_phone,
+		cu.email   as cu_email,
+		cu.status  as cu_status,
+		cu.note  as  cu_note,
+	  	cu.create_time   as      cu_create_time,
+	 	cu.update_time   as      cu_update_time
+		from tb_crm_customer c left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_users cu on c.owner_user_id=cu.user_id
+		where c.customer_id = #{customerId,jdbcType=INTEGER}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select customer_id, owner_user_id, creator_user_id, contacts_id, name,
+		origin, address,
+		zip_code, industry, annual_revenue, ownership, rating, create_time,
+		update_time,
+		is_deleted, is_locked, delete_user_id, delete_time
+		from tb_crm_customer
+	</select>
+ 	<!-- 根据查询条件获取总记录数 -->
+	 <select id="count" resultType="integer">
+		select count(customer_id) from tb_crm_customer
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 分页查询语句 -->
+	<select id="findByPage" resultMap="CustomerResultMap">
+		select
+		c.customer_id,
+		c.name,
+		c.industry,
+		c.rating,
+		c.address,
+		c.zip_code,
+		c.owner_user_id,
+		c.creator_user_id,
+		c.create_time,
+		c.update_time,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.user_id   as cu_user_id, 
+		cu.user_name   as cu_user_name,
+		cu.password   as   cu_password,
+		cu.salt   as  cu_salt,
+		cu.phone   as   cu_phone,
+		cu.email   as cu_email,
+		cu.status  as cu_status,
+		cu.note  as  cu_note,
+	  	cu.create_time   as      cu_create_time,
+	 	cu.update_time   as      cu_update_time
+		from tb_crm_customer c left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_users cu on c.owner_user_id=cu.user_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+             </if>
+		</where>
+		limit #{offset},#{pageSize}
+	</select> 
+	
+	
+	
+	 <!-- 根据查询条件获取总记录数 -->
+	 <select id="countOne" resultType="integer">
+		select count(customer_id) from tb_crm_customer
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 分页查询语句 -->
+	<select id="findByPageOne" resultMap="CustomerResultMap">
+		select
+		c.customer_id,
+		c.origin,
+		c.name,
+		c.create_time,
+		c.owner_user_id,
+		c.creator_user_id,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.user_id   as cu_user_id, 
+		cu.user_name   as cu_user_name,
+		cu.password   as   cu_password,
+		cu.salt   as  cu_salt,
+		cu.phone   as   cu_phone,
+		cu.email   as cu_email,
+		cu.status  as cu_status,
+		cu.note  as  cu_note,
+	  	cu.create_time   as      cu_create_time,
+	 	cu.update_time   as      cu_update_time
+		from tb_crm_customer c left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_users cu on c.owner_user_id=cu.user_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+				name = #{con.name}
+				</if>
+             </if>
+		</where>
+		limit #{offset},#{pageSize}
+	</select>
+	
+		 <!-- 根据查询条件获取总记录数 -->
+	 <select id="countTwo" resultType="integer">
+		select count(customer_id) from tb_crm_customer
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 分页查询语句 -->
+	<select id="findByPageTwo" resultMap="CustomerResultMap">
+		select
+		c.customer_id,
+		c.origin,
+		c.name,
+		c.create_time,
+		c.creator_user_id,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.user_id   as cu_user_id, 
+		cu.user_name   as cu_user_name,
+		cu.password   as   cu_password,
+		cu.salt   as  cu_salt,
+		cu.phone   as   cu_phone,
+		cu.email   as cu_email,
+		cu.status  as cu_status,
+		cu.note  as  cu_note,
+	  	cu.create_time   as      cu_create_time,
+	 	cu.update_time   as      cu_update_time
+		from tb_crm_customer c left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_users cu on c.owner_user_id=cu.user_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+             </if>
+		</where>
+		limit #{offset},#{pageSize}
+	</select>
+	
+	<!-- 删除用户，可批量删除 -->
+	<delete id="deleteCustomer">
+	delete from tb_crm_customer
+		where customer_id in
+		<foreach collection="customerIds" item="id" open="(" close=")" separator=",">
+		#{id}
+		</foreach>	
+	</delete> 
+	 <!-- 根据名客户名查询客户 -->
+  <select id="findByName" resultMap="CustomerResultMap">
+		select
+		c.customer_id,
+		c.origin,
+		c.name,
+		c.create_time,
+		c.creator_user_id,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.user_id   as cu_user_id, 
+		cu.user_name   as cu_user_name,
+		cu.password   as   cu_password,
+		cu.salt   as  cu_salt,
+		cu.phone   as   cu_phone,
+		cu.email   as cu_email,
+		cu.status  as cu_status,
+		cu.note  as  cu_note,
+	  	cu.create_time   as      cu_create_time,
+	 	cu.update_time   as      cu_update_time
+		from tb_crm_customer c left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_users cu on c.owner_user_id=cu.user_id
+		 where c.name=#{name}
+	</select>	
+	<!--业务查询逻辑  -->   
+ <select id="con" resultType="integer">
+		select count(customer_id)
+		from tb_crm_customer c
+		left join tb_users o
+		on
+		c.owner_user_id=o.user_id
+		left
+		join tb_users b
+		on
+		c.creator_user_id=b.user_id
+		where 1=1
+			<if test="con.owner==0">
+			c.owner_user_id is not null
+			</if>
+			<if test="con.owner==1">
+				and c.owner_user_id is null
+			</if>
+			<if test="con.add=='今日新建'">
+				and to_days(l.nextstep_time)=to_days(now())
+			</if>
+			<if test="con.add=='本周新建'">
+				and
+				yearweek(date_format(l.nextstep_time,'%y-%m-%d'))=yearweek(now())
+			</if>
+			<if test="con.add=='本月新建'">
+				and
+				date_format(l.nextstep_time,'%y-%m')=date_format(now(),'%y-%m')
+			</if>
+		          limit #{offset},#{pageSize}
+			</select>  
+</mapper>

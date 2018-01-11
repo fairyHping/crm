@@ -1,0 +1,192 @@
+package com.zhidi.system.controller;
+
+
+
+
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.service.IBusinessContractService;
+import com.zhidi.system.service.IBusinessCustomerService;
+import com.zhidi.system.service.IBusinessService;
+import com.zhidi.system.service.IContactsService;
+import com.zhidi.system.service.IContractService;
+import com.zhidi.system.service.ICustomerService;
+import com.zhidi.system.service.IUserService;
+import com.zhidi.system.entity.Business;
+import com.zhidi.system.entity.BusinessContract;
+import com.zhidi.system.entity.BusinessCustomer;
+import com.zhidi.system.entity.Contacts;
+import com.zhidi.system.entity.Contract;
+import com.zhidi.system.entity.Customer;
+import com.zhidi.system.entity.Task;
+import com.zhidi.system.entity.User;
+
+@Controller
+@RequestMapping("/system/contract")
+public class ContractController {
+
+	@Autowired
+	private IContractService contractService;
+	@Autowired
+	private IBusinessService businessService;
+	@Autowired
+	private IUserService userService;
+	
+	@Autowired
+	private ICustomerService customerService;
+	
+	@Autowired
+	private IBusinessCustomerService businesscustomerService;
+	@Autowired
+	private IBusinessContractService businesscontractService;
+	
+	
+	@GetMapping("/list")
+	public String toListPage(){
+		return "system/listContract";
+	}
+	
+	/**
+	 * 转向到添加合同的页面
+	 * 
+	 * @return
+	 */
+	@GetMapping("/addContract")
+	public String add(Model model){
+//		Contract contract=contractService.findById(contractId);
+//		model.addAttribute("contract", contract);
+		List<User> list=userService.findAll();
+		model.addAttribute("users", list);
+		List<Customer> list2=customerService.findAll();
+		model.addAttribute("customers", list2);
+		List<Business> list3=businessService.findAll();
+		model.addAttribute("businesss", list3);
+		return "system/addContract";
+	}
+	
+	/**
+	 * 分页查询未被删除的合同信息
+	 * 
+	 * @param page
+	 * @return
+	 *///分页展示
+	@PostMapping("/list")
+	@ResponseBody
+	public JsonResult list(PageBean<Contract> page){
+		
+		page=contractService.findByPage(page);
+		return JsonResult.buildSuccessResult("登录成功", page);
+	}
+	
+	
+	/**
+	 * 处理添加合同的请求
+	 * 
+	 * @return
+	 */
+	@PostMapping("/addContract")
+	@ResponseBody
+	public JsonResult save(Contract contract,BusinessCustomer businesscustomer,BusinessContract businesscontract,HttpServletRequest request){
+	
+			Integer rows=contractService.save(contract);
+			if(rows>0){
+				Integer maxId=contractService.findMaxId();
+				businesscontract.setContractId(maxId);
+				businesscontract.setBusinessId(contract.getBusinessId());
+				businesscontractService.save(businesscontract);
+				businesscustomer.setBusinessId(Integer.valueOf(request.getParameter("customerId")));
+				businesscustomer.setBusinessId(contract.getBusinessId());
+				businesscustomerService.save(businesscustomer);
+				
+				return JsonResult.buildSuccessResult("添加成功");
+			}else{
+				return JsonResult.buildFailureResult(-110, "添加失败");
+			}
+		
+	}
+	
+	/**
+	 * 转向到修改合同的页面
+	 * @param model
+	 * @param contractId
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping("/updateContract")
+	public String update(Model model,Integer contractId,Integer userId){
+		Contract contract=contractService.findById(contractId);
+		model.addAttribute("contract", contract);
+		List<User> list1=userService.findAll();
+		model.addAttribute("users", list1);
+		return "system/updateContract";
+	}
+	
+	/**
+	 * 处理修改合同的请求 
+	 * @param contract
+	 * @param user
+	 * @return
+	 */
+	@PostMapping("/toUpdateContract")
+	@ResponseBody
+	public JsonResult updateContract(Contract contract,User user){
+		if(contract==null){
+			return JsonResult.buildFailureResult(-200, "选择需要修改的信息");
+		}	
+		contract.setStatus(1);
+		contract.setOwnerUserId(user.getUserId());
+		Integer rows=contractService.update(contract);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("修改成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "修改失败！");
+		}
+	}
+	
+	
+	/**
+	 * 处理删除的请求
+	 * @param contractIds
+	 * @return
+	 */
+	
+	@PostMapping("/deleteContract")
+	@ResponseBody
+	public JsonResult deleteContract(String contractIds){
+		Integer rows = contractService.deleteContract(contractIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "删除失败！");
+		}
+	}
+	
+	/**
+	 * 返回到详情页面
+	 * @param model
+	 * @param contractId
+	 * @return
+	 */
+	@GetMapping("/ContractInfo")
+	public String findall(Model model,Integer contractId){
+		List<User> list=userService.findAll();
+		Contract contract=contractService.findById(contractId);
+		model.addAttribute("users", list);
+		model.addAttribute("contract", contract);
+		return "system/ContractInfo";
+	}
+	
+}

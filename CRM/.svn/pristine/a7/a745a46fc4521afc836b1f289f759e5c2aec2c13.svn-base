@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ILoginHistoryDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.LoginHistory">
+    <id column="login_id" jdbcType="INTEGER" property="loginId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+    <result column="login_ip" jdbcType="VARCHAR" property="loginIp" />
+    <result column="login_status" jdbcType="CHAR" property="loginStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_login_history
+    where login_id = #{loginId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.LoginHistory">
+    insert into tb_crm_login_history (login_id, user_id, login_time, 
+      login_ip, login_status)
+    values (#{loginId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{loginTime,jdbcType=TIMESTAMP}, 
+      #{loginIp,jdbcType=VARCHAR}, #{loginStatus,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.LoginHistory">
+    update tb_crm_login_history
+    set user_id = #{userId,jdbcType=INTEGER},
+      login_time = #{loginTime,jdbcType=TIMESTAMP},
+      login_ip = #{loginIp,jdbcType=VARCHAR},
+      login_status = #{loginStatus,jdbcType=CHAR}
+    where login_id = #{loginId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select login_id, user_id, login_time, login_ip, login_status
+    from tb_crm_login_history
+    where login_id = #{loginId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select login_id, user_id, login_time, login_ip, login_status
+    from tb_crm_login_history
+  </select>
+</mapper>

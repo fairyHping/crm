@@ -1,0 +1,27 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Role;
+
+public interface IRoleDao extends BaseDao<Role> {
+ 
+	/**
+	 * 根据用户id和角色状态查询对应的角色信息
+	 * @param userId -用户id
+	 * @param status -角色状态  ：1表示正常，0表示禁用，2表示删除
+	 * @return
+	 */
+	List<Role> findRoleByUserId(@Param("userId")Integer userId,@Param("status") Integer status);
+
+	/**
+	 * 根据角色id删除角色信息，可批量删除
+	 * @param roleIds
+	 * @return
+	 */
+	Integer deleteUser(@Param("roleIds")List<Integer> roleIds);
+
+}

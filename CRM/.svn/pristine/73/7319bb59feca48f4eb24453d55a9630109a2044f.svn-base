@@ -1,0 +1,9 @@
+package com.zhidi.system.service;
+
+import java.util.HashMap;
+
+public interface ISMSService {
+
+	HashMap<String, Object> sendTemplateSMS(String to,
+			String templateId, String[] datas);
+}

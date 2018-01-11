@@ -1,0 +1,188 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+   String basepath=request.getContextPath();
+   String path=request.getLocalAddr()+"://"+request.getServerName()+":"+request.getServerPort()+basepath+"/";
+   %>
+   <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=path%>">
+<meta charset="UTF-8">
+<title>修改产品</title> 
+ <%@ include file="../../script.html" %>
+
+ <style type="text/css">
+ td{
+ border: 1px solid  #DCDCDC;
+ padding-left: 10px;
+ }
+ .t1{
+ background: #DCDCDC; 
+ text-align: right;
+ padding-right: 10px;
+ }
+ .t2{
+ height: 30px;
+ border: 1px solid #DCDCDC;
+ width: 200px;
+ }
+ </style>
+</head>
+<body>
+
+<div class="container">
+        <div class="content">
+                <form id="addForm" enctype="multipart/form-data">
+                <table 
+			style=" border:1px solid ; border-collapse: collapse;height: 500px;width: 95%" >
+                    <tbody>
+                    <tr ><td colspan="4" >产品基本信息</td></tr>
+                    <tr>
+                        <td class="t1">产品名称</td>
+                        <td ><input class="t2"  type="text" name="name" data-options="required:true" placeholder="产品名称" value="${product.name }" readonly="readonly"></td>
+                        <td class="t1">产品类别</td>
+                        <td >
+                        	<select class="t2">
+                        		<c:forEach items="${requestScope.Category }" var="category">
+                        				<c:if test="${category.id eq product.categoryId}">
+                        					<option value="${category.id}" selected="selected">${category.name }</option>
+                        				</c:if>                    	                      			
+								</c:forEach>              
+                        	</select>                       
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="t1">研发时间</td>
+                        <td ><input class="easyui-datebox t2" type="text" name="developmentTime" data-options="required:true " value="${product.developmentTime }" readonly="readonly"></td>
+                        <td class="t1">详情连接</td>
+                        <td ><input class="t2" type="text" name="link" data-options="required:true" value="${product.link }" readonly="readonly"></td>
+                    </tr>
+                    <tr>
+                        <td class="t1">开发团队</td>
+                        <td ><input class="t2" type="text" name="developmentTeam" data-options="required:true, validType:'maxLength[10]'" value="${product.developmentTeam }" readonly="readonly"></td>
+                        <td class="t1">成本价</td>
+                        <td ><input class="t2" type="text" name="costPrice" data-options="required:true" value="${product.costPrice }" readonly="readonly"></td>
+                    </tr>                 
+                    <tr>
+                        <td class="t1" >建议售价</td>
+                        <td colspan="3"><input class="t2" type="text" name="suggestedPrice" value="${product.suggestedPrice }" readonly="readonly" class="easyui-validatebox" data-options="required:true, validType:'maxLength[64]'" ></td>
+                        </tr>
+                    <tr><td colspan="4" >产品基本信息</td></tr>
+                     <tr style="height: 80px">
+                        <td class="t1">主题</td>
+                      
+                        <td >
+                    		<img name="file" id="chooseIdCardPreview" alt="" src=""/>
+                    	</td>
+                    	<td ></td>
+                    	<td >
+                        	<div id="chooseIdCard">选择文件</div>
+                        	<input class="t2" type="hidden" name="IdCardImageURL" id="IdCardUrl"/>
+                        </td>
+                       
+                    </tr>
+                    <tr>
+                        <td class="t1">副图</td>
+                        <td colspan="3">
+                            <a class="easyui-linkbutton " id="add-button" data-options="iconCls:'icon-add',plain:true" style="float: right;margin-right: 20px">添加</a>
+                        </td>
+                        
+                    </tr>
+                    <tr><td colspan="4" >产品基本信息</td></tr>
+                    <tr>
+                        <td class="t1">备注</td>
+                        <td colspan="3">
+                            <input class="t2" type="text" name="msg" class="easyui-validatebox" width="500px" height="200px" readonly="readonly">
+                        </td>
+                    </tr>
+                    </tbody>
+                  
+                </table>
+                  </form>
+            </div>
+            <div class="btn-selection">
+                <a href="javascript:void(0);" class="easyui-linkbutton save-btn" id="saveProduct" data-options="selected:true">保存</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton reset-btn" id="reset" data-options="selected:true">重置</a>
+            </div>
+        </div>
+    </div>
+  </body>
+ 
+	
+  <script type="text/javascript">
+//添加产品
+	$("#saveProduct").on("click",function(){
+		var isValid = $('#addForm').form('validate');
+		if(!isValid){
+			return;
+		}	
+		$.post("system/product/doAddProduct",$("#addForm").serialize(),function(data){				
+			if(data.success){
+ 				parent.$.messager.alert({
+     				title:"提示",
+     				msg:data.message,
+ 				}) 
+ 				parent.$("#topWindow").window("close")      				
+			}else{
+				$.messager.alert({
+         			title:"提示",
+         			msg:data.message,
+  			})
+			}
+		},"json")			
+	})
+		//重置
+		$("#reset").on("click",function(){
+			$("#addForm").form("reset")
+		})
+	</script>
+	<script type="text/javascript">
+		//上传处理
+		var chooseIdCardUploader = WebUploader.create({
+			// 选完文件后，是否自动上传。
+		    auto: true,
+		    // swf文件路径
+		    swf: 'https://cdn.bootcss.com/webuploader/0.1.1/Uploader.swf',		
+		    // 文件接收服务端。
+		    server: 'CRM/system/product/doAddProduct',		
+		    // 选择文件的按钮。可选。
+		    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+		    pick: '#chooseIdCard',		
+		    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+		    resize: false,
+		    // 只允许选择图片文件。
+		    accept: {
+		        title: 'Images',
+		        extensions: 'gif,jpg,jpeg,bmp,png',
+		        mimeTypes: 'image/*'
+		    }
+		});
+		chooseIdCardUploader.on('fileQueued', function( file ) {
+			chooseIdCardUploader.makeThumb( file, function( error, src ) {
+		        if (error) {
+		            $("#chooseIdCardPreview").replaceWith('<span>不能预览</span>');
+		            return;
+		        }
+		        $("#chooseIdCardPreview").attr( 'src', src );
+		    }, 100, 100 );
+		});
+		//文件上传成功接受回调信息
+		chooseIdCardUploader.on('uploadSuccess', function (file,response) {
+			parent.$.messager.alert({
+       			title:"提示",
+       			msg:"文件上传成功",
+			})
+			 $("#IdCardUrl").val(response.url);
+	    });
+		
+		
+	</script>
+
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

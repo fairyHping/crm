@@ -1,0 +1,42 @@
+
+
+package com.zhidi.system.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IRoleDao;
+import com.zhidi.system.entity.Role;
+import com.zhidi.system.service.IRoleService;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年10月27日
+* 类描述：
+*/
+@Service
+public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleService {
+	
+	@Autowired
+	private IRoleDao roleDao;
+
+	/**
+	 * 根据用户id和角色状态查询角色信息
+	 * @param userId -用户id
+	 * @param status -角色状态  ：1表示正常，0表示禁用，2表示删除
+	 * @return 返回值为List<Role>
+	 */
+	@Override
+	public List<Role> findRoleByUserId(Integer userId, Integer status) {
+		
+		return roleDao.findRoleByUserId(userId,status);
+	}
+
+	
+
+}
+
+

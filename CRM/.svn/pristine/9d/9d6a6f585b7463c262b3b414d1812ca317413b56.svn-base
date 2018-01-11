@@ -1,0 +1,156 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+	String basePath = request.getContextPath();//获取应用程序的根路径
+	//获取应用程序的全路径
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href=<%=path%>>
+<meta charset="UTF-8">
+<title>新建线索</title>
+<%@include file="../script.html"%>
+<style type="text/css">
+#div {
+	text-align: center;
+	width: 750px;
+	margin-left:15px;
+	margin-right: 30px;
+	margin-top:20px;
+}
+
+
+
+#other {
+	text-align: left;
+	line-height: 40px;
+}
+
+.td1 {
+	text-align: right;
+	background-color: #f5f5f5;
+}
+
+.td2 {
+	text-align: left
+}
+</style>
+</head>
+<body>
+	<div id="div">
+		<form id="leadsForm">
+			<div id="main" class="easyui-panel">
+				<table style="text-align: center">
+					<tr>
+						<td colspan="4" id="other"><strong>主要信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">合同编号</td>
+						<td class="td2"><input name="number"
+							class="easyui-textbox textbox-radius"
+							style="width: 200px; padding: 5px"></td>
+						<td class="td1">签约时间</td>
+						<td class="td2"><input name="dueDate" class="easyui-datebox"
+							data-options="required:true" style="width: 200px;" /></td>
+					</tr>
+					<tr>
+						<td class="td1">来源商机</td>
+						<td class="td2"><select name="businessId" class="easyui-combobox"
+							data-options="required:true,width:200" id="selectBusiness">
+								<option value="-1">请选择来源商机</option>
+								<c:forEach items="${businesss}" var="business">
+									<option value="${business.id }">${business.name }</option>
+								</c:forEach>
+						</select> <a  href="javascript:void(0)"   class="easyui-linkbutton" >新建商机</a></td>
+						<td class="td1">来源客户</td>
+						<td class="td2"><select name="customerId" class="easyui-combobox"
+							data-options="required:true,width:200" id="selectcustomer">
+								<option value="-1">请选择客户</option>
+								<c:forEach items="${customers}" var="customer">
+									<option value="${customer.customerId}">${customer.name }</option>
+								</c:forEach>
+						</select></td>
+					</tr>
+					<tr>
+						<td class="td1">负责人</td>
+						<td class="td2"><select name="ownerUserId" class="easyui-combobox"
+							data-options="required:true,width:200" id="selectuser">
+								<option value="-1">请选择负责人</option>
+								<c:forEach items="${users }" var="user">
+									<option value="${user.userId }">${user.userName }</option>
+								</c:forEach>
+						</select></td>
+						<td class="td1">合同金额(元)</td>
+						<td class="td2"><input name="price" class="easyui-textbox textbox-radius"
+							style="width: 200px"></td>
+					</tr>
+					<tr>
+						<td class="td1">合同生效时间:</td>
+						<td class="td2"><input id="dd" name="startTime" type="text"
+							class="easyui-datebox" required="required" style="width: 200px"></td>
+						<td class="td1">合同到期时间:</td>
+						<td class="td2"><input id="dd" name="endTime" type="text"
+							class="easyui-datebox" required="required" style="width: 200px"></td>
+					</tr>
+					<tr>
+						<td colspan="4" id="other"><strong>附加信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">条件和条款:</td>
+						<td class="td2"><textarea class="theme-textbox-radius"
+								rows="5" cols="50" name="content"></textarea></td>
+					</tr>
+					<tr>
+						<td class="td1">合同描述:</td>
+						<td class="td2"><textarea class="theme-textbox-radius"
+								rows="5" cols="50" name="description"></textarea></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center"><a id="save"
+							href="javascript:void(0);" class="easyui-linkbutton"
+							data-options="iconCls:'icon-ok'">保存</a></td>
+						<td colspan="2"><a id="back" href="system/toListContract"
+							class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+<script type="text/javascript">
+$(function(){
+	/* 获取到下拉列表中的数据 */
+	
+	$("#save").on("click",function(){
+		var isValid = $('#leadsForm').form('validate');
+		if(!isValid){
+			return;
+		}	
+		$.post("system/contract/addContract",$("#leadsForm").serialize(),function(data){				
+			if(data.success){
+ 				parent.$.messager.alert({
+     				title:"提示",
+     				msg:data.message,
+ 				}) 
+ 				parent.$("#topWindow").window("close")      				
+			}else{
+				$.messager.alert({
+         			title:"提示",
+         			msg:data.message,
+  			})
+			}
+		},"json")			
+	})
+	
+	$(function(){
+		$("#back").on("click",function(){
+			parent.$("#topWindow").window("close");
+			})
+	})
+});
+</script>
+</html>

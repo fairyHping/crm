@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IBusinessStatusDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.BusinessStatus">
+    <id column="status_id" jdbcType="INTEGER" property="statusId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="is_end" jdbcType="INTEGER" property="isEnd" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_business_status
+    where status_id = #{statusId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.BusinessStatus">
+    insert into tb_crm_business_status (status_id, name, order_id, 
+      is_end, description)
+    values (#{statusId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER}, 
+      #{isEnd,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.BusinessStatus">
+    update tb_crm_business_status
+    set name = #{name,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=INTEGER},
+      is_end = #{isEnd,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR}
+    where status_id = #{statusId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select status_id, name, order_id, is_end, description
+    from tb_crm_business_status
+    where status_id = #{statusId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select status_id, name, order_id, is_end, description
+    from tb_crm_business_status
+  </select>
+</mapper>

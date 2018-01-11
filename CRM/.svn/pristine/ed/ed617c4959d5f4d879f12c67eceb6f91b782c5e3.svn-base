@@ -1,0 +1,36 @@
+package com.zhidi.system.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.system.entity.SmsRecord;
+import com.zhidi.system.service.ISmsRecordService;
+
+@Controller
+@RequestMapping("/system/sale")
+public class SmsRecordController {
+	@Autowired
+	private ISmsRecordService smsrecordService;
+	
+	@GetMapping("/sms")
+	public String toListMarketing(){
+		return "system/marketing/listSmsRecord";
+	}
+	
+	@PostMapping("listSmsRecord")
+	@ResponseBody
+	public JsonResult save(SmsRecord smsrecord){
+		Integer rows=smsrecordService.save(smsrecord);
+		if (rows>0) {
+			return JsonResult.buildSuccessResult("发送成功");
+		}else{
+			return JsonResult.buildFailureResult(rows, "发送失败");
+		}
+		
+	}
+}

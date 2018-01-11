@@ -1,0 +1,30 @@
+package com.zhidi.system.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IProductDao;
+import com.zhidi.system.entity.Product;
+import com.zhidi.system.service.IProductService;
+
+/**
+*2017年10月31日
+*@author 作者: Zhang
+*描述：
+*/
+@Service
+public class ProductServiceImpl extends BaseServiceImpl<Product> implements IProductService {
+
+	@Autowired
+	protected IProductDao productDao;
+
+	@Override
+	public Integer findByMaxId() {
+		int maxId= productDao.findByMaxId();
+		return maxId;
+	}
+
+	 
+}
+

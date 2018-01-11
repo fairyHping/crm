@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ISmsRecordDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.SmsRecord">
+    <id column="sms_record_id" jdbcType="INTEGER" property="smsRecordId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <resultMap type="com.zhidi.system.entity.SmsRecord" id="SmsRecordMap" extends="BaseResultMap">
+  	<association property="smstemplate" columnPrefix="sms_" resultMap="com.zhidi.system.dao.ISmsTemplateDao.BaseResultMap"/>
+  	<association property="user" columnPrefix="u_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"/>
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_sms_record
+    where sms_record_id = #{smsRecordId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.SmsRecord">
+    insert into tb_crm_sms_record (sms_record_id, user_id, telephone, 
+      send_time, content)
+    values (#{smsRecordId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{telephone,jdbcType=VARCHAR}, 
+      #{sendTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.SmsRecord">
+    update tb_crm_sms_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where sms_record_id = #{smsRecordId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select sms_record_id, user_id, telephone, send_time, content
+    from tb_crm_sms_record
+    where sms_record_id = #{smsRecordId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select sms_record_id, user_id, telephone, send_time, content
+    from tb_crm_sms_record
+  </select>
+</mapper>

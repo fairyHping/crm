@@ -1,0 +1,18 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.RoleFunction;
+
+public interface IRoleFunctionDao extends BaseDao<RoleFunction> {
+    int deleteByPrimaryKey(@Param("roleId") Integer roleId, @Param("funcId") Integer funcId);
+
+    int insert(RoleFunction record);
+
+    List<RoleFunction> selectAll();
+    
+  
+}

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IEmployeeDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Employee">
+    <id column="emp_id" jdbcType="INTEGER" property="empId" />
+    <result column="position_id" jdbcType="INTEGER" property="positionId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user_id" jdbcType="INTEGER" property="updateUserId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="mgr_id" jdbcType="INTEGER" property="mgrId" />
+  </resultMap>
+  
+  <resultMap type="com.zhidi.system.entity.Employee" id="empResultMap" extends="BaseResultMap">
+  	<association property="position" columnPrefix="p_" resultMap="com.zhidi.system.dao.IPositionDao.BaseResultMap"></association>
+  	<association property="user" columnPrefix="u_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"></association>
+  	<association property="emp" columnPrefix="em" resultMap="com.zhidi.system.dao.IEmployeeDao.BaseResultMap"></association>
+  </resultMap>
+  <sql id="baseColum">
+  	e.emp_id, e.position_id, e.status, 
+      e.name, e.img, e.sex, e.email, 
+      e.telephone, e.address, e.create_time, 
+      e.creator_user_id, e.update_time, e.update_user_id, 
+      e.user_id,e.mgr_id
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_employee
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Employee">
+    insert into tb_crm_employee (emp_id, position_id, status, 
+      name, img, sex, email, 
+      telephone, address, create_time, 
+      creator_user_id, update_time, update_user_id, 
+      user_id,mgr_id)
+    values (#{empId,jdbcType=INTEGER}, #{positionId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, 
+      #{telephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{creatorUserId,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=INTEGER}, 
+      #{userId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Employee">
+    update tb_crm_employee
+    set position_id = #{positionId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      mgr_id=#{mgrId}
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select emp_id, position_id, status, name, img, sex, email, telephone, address, create_time, 
+    creator_user_id, update_time, update_user_id, user_id,mgr_id
+    from tb_crm_employee
+    where emp_id = #{empId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select emp_id, position_id, status, name, img, sex, email, telephone, address, create_time, 
+    creator_user_id, update_time, update_user_id, user_id,mgr_id
+    from tb_crm_employee
+  </select>
+  
+  <select id="count" resultType="Integer">
+  	select count(emp_id) from tb_crm_employee 
+  	 <where>
+  	 status=1
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.positionId !=null  and con.positionId!=''">
+					and position_id=#{con.positionId}
+				</if>
+				<if test="con.mgrId !=null  and con.mgrId!=''">
+					and mgr_id=#{con.mgrId}
+				</if>
+				<if test="con.content !=null and con.content!=''">
+					and name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</where>
+  </select>
+  <select id="findByPage" resultMap="empResultMap">
+  	select <include refid="baseColum"/>,
+  		pos.position_id p_position_id, 
+		pos.parent_id p_parent_id, 
+		pos.name p_name, 
+		pos.department_id p_department_id, 
+		pos.description p_description,
+		u.user_id u_user_id,
+		u.user_name u_user_name,
+		u.password u_password,
+		u.salt u_salt,
+		u.phone u_phone,
+		u.email u_email,
+		u.note u_note,
+		u.create_time u_create_time,
+		u.update_time u_update_time,
+		em.emp_id e_emp_id, 
+		em.position_id e_position_id, 
+		em.status e_status, 
+      	em.name e_name, e.img e_img, 
+      	em.sex e_sex, e.email e_email, 
+     	em.telephone  e_telephone, 
+     	em.address e_address, 
+     	em.create_time e_create_time, 
+        em.creator_user_id e_creator_user_id, 
+        em.update_time e_update_time, 
+        em.update_user_id  e_update_user_id, 
+        em.user_id e_user_id,
+        em.mgr_id e_mgr_id
+        
+      from tb_crm_employee e
+      left join tb_crm_position pos on e.position_id=pos.position_id
+      left join tb_users u on e.user_id=u.user_id
+      left join tb_crm_employee em on e.emp_id=em.emp_id
+      <where>
+      e.status=1
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.positionId !=null  and con.positionId!=''">
+					and e.position_id=#{con.positionId}
+				</if>
+				<if test="con.mgrId !=null  and con.mgrId!=''">
+					and e.mgr_id=#{con.mgrId}
+				</if>
+				<if test="con.content !=null and con.content!=''">
+					and e.name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</where>
+      limit #{offset},#{pageSize}
+  </select>
+</mapper>

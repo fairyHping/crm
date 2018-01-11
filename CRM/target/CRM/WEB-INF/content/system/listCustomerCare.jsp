@@ -1,0 +1,226 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+        <base href="<%=path%>">
+        <meta charset="UTF-8">
+        <title>客户管理</title>
+        <%@include file="../script.html" %>
+    
+    </head>
+    <body>
+      <div>
+	    	<div style="padding: 1px;background-color: #ECECFF" >
+	    		<label>客户视图：</label>
+		    		 <a class="easyui-linkbutton" data-options="iconCls:'icon-more',plain:true">全部</a>
+		    		  <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-man',plain:true">我负责的</a>
+			    	 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-tip',plain:true">下属负责</a>
+			    	 
+		    		  <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-man',plain:true">电话</a>
+			    	  <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-tip',plain:true">其他</a>
+	    		<span style="margin-right: 150px">
+	                 <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">今日关怀</a>
+	    			 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-add',plain:true">本周关怀</a>
+		    		 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-edit',plain:true">本月关怀</a>
+		    		 <a class="easyui-linkbutton edit-bmutton" data-options="iconCls:'icon-add',plain:true">最近创建</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-man',plain:true">最近更新</a>
+	    		</span>
+	    	</div>	
+	    	<div style="padding: 10px">
+	    	      <select class="easyui-combobox" id="source">
+	    	        <option value="">批量操作</option>
+	    	        <option value="name">客户名</option>
+	    	        <option value="createUserId">创建者</option>
+	    	        <option>批量共享</option>
+	    	        <option>取消关注</option>
+	    	        <option>取消共享</option>
+	    	       </select>
+		    	  <input type="text" id="name" class="easyui-textbox " style="width: 100px">
+	              <a id="searchBtn" class="easyui-linkbutton " data-options="iconCls:'icon-search',plain:true">搜索</a> 
+	    	      <a  id="tabx" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" style="margin-left: 200px">新建关怀</a>
+	    	      <a  id="deleteBtn" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',plain:true">删除</a>
+	    	      <a  id="updateBtn" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">修改</a>
+	    	      
+    	       </div>	 	 
+    	</div>
+    	<table id="customerList" style="width:100%">
+    	</table>
+    	
+    	<div id="topWindow"></div>
+    
+    	<script type="text/javascript">
+    	
+    	
+        //为搜索按钮添加事件处理函数
+    	 $(function(){
+    		 $('#searchBtn').on("click", function(event) {
+    			event.preventDefault();
+    			var date = {condition : {
+    				'source' : $('#source').combobox('getValue'),
+    				'name' : $('#name').textbox('getValue')}
+    			};
+    			
+    			loadCustomer(date)
+    		});
+    		 function loadCustomer(date){
+    			 $("#customerList").datagrid('load', date);
+    		 } 
+    	 });
+        
+    	 //新建客户信息在弹窗页面
+      	 $("#tabx").on("click",function(){	          
+              	parent.openTopWindow({url :"system/customer/addCare",
+      		 	title:"关怀信息",	   		 	
+      		 	 width : 800,
+                height : 400,
+                onClose : function() {
+    				$("#customerList").datagrid("reload");
+    				$("#customerList").datagrid("uncheckAll");
+    			}       
+   			});
+              	    	          
+          });
+      	  
+    	  /*  //查看客户信息在弹窗页面 */
+    	function detail(customerId){	
+			parent.openTopWindow({
+	   		 url:"system/customer/findCare?customerId="+customerId,
+   		 	title:"客户关怀详情",	   		 	
+   		 	width : 800,
+            height : 400,
+            onClose : function() {
+ 				$("#customerList").datagrid("reload");
+ 				$("#customerList").datagrid("uncheckAll");
+ 			}       
+			});   	          
+		}
+
+		//删除
+		function removeCustomer(url, customerIds) {
+			parent.$.messager.confirm('操作提示', '确定要删除吗?', function(r) {
+				if (r) {
+					$.post(url, {
+						"customerIds" : customerIds
+					}, function(data) {
+						if (data.success) {
+							parent.$.messager.show({
+								"title" : "提示",
+								"msg" : data.message,
+								"timeout" : 6000
+							})
+							$("#customerList").datagrid("reload");
+						} else {
+							parent.$.messager.alert({
+								title : "提示",
+								msg : data.message
+							})
+						}
+					}, "json")
+				}
+			});
+
+		}
+
+		/* 删除某一行或多行数据 */
+		$("#deleteBtn").on("click", function(event) {
+			//阻止原有的点击事件行为
+			event.preventDefault();
+			//获取选中的客户，选中的是一整行数据
+			var rows = $("#customerList").datagrid("getChecked");
+			//没有选中某一个客户时进行提示
+			if (!rows || rows.length < 1) {
+				parent.$.messager.alert("警告", "必须选中要删除的用户！", "warning");
+				return;
+			}
+			var customerIds = new Array();
+			$.each(rows, function(index, obj) {
+				if (obj) {
+					customerIds.push(obj.customerId);
+				}
+			});
+
+			removeCustomer("system/customer/delCustomerCare",customerIds.join(","))
+		});
+		$("#updateBtn").on("click", function(event) {
+			//阻止原有的点击事件行为
+			event.preventDefault();
+			//获取选中的客户，选中的是一整行数据
+			var rows = $("#customerList").datagrid("getChecked");
+			//没有选中某一个客户时进行提示
+			if (!rows || rows.length < 1) {
+				parent.$.messager.alert("警告", "必须选中要修改的用户！", "warning");
+				return;
+			}
+			if ( rows.length > 1) {
+				parent.$.messager.alert("警告", "只能选中一位用户！", "warning");
+				return;
+			}
+
+			//获取到客户的id
+			var customerIds = new Array();
+			$.each(rows, function(index, obj) {
+				if (obj) {
+					customerIds.push(obj.customerId);
+				}
+			});
+
+			 /*  //编辑客户信息在弹窗页面 */
+		           	parent.openTopWindow({
+		             url :"system/customer/editCare?customerId="+customerIds,
+		   		 	title:"编辑客户",	
+		   		      width : 800,
+		              height : 400,
+		             onClose : function() {
+		 				$("#customerList").datagrid("reload");
+		 				$("#customerList").datagrid("uncheckAll");
+		 			}       
+					});
+			 
+		          
+		});
+ $(function(){
+		$("#customerList").datagrid({
+			url : "system/customer/care",
+			toolbar : "#toolbar",
+			pagination : true,
+			fitColumns : true,
+			rownumbers : true,
+			idField : "customerId",
+			columns : [[
+				{field:'customerId',width:70,align:'center',checkbox:true},	
+				{field:'industry',title:'关怀主题',width:70,align:'center'},	
+				{field:'name',title:'客户',width:70,align:'center'},
+				{field:'createTime',title:'关怀时间',width:70,align:'center'},
+				{field:'cUser',title:'拥有者',width:70,align:'center',formatter:function(value){
+					if(value){
+						return value.userName;
+					}
+					return "";
+				} },
+				{field:'user',title:'创建者',width:70,align:'center',formatter:function(value){
+					if(value){
+						return value.userName;
+					}
+					return "";
+				} },
+			    {field:'opreation',title:'操作',width:100,align:'center',formatter:function(value,rowData,index){
+                      return "<a href='javascript:void(0)'  onclick='detail("+rowData.customerId+")'>查看</a>&nbsp;&nbsp;" 
+				    }}
+			]],
+					loadFilter: function(data){
+						if(data && data.result){
+							return data.result;
+							$("#customerList").datagrid("reload");
+						}
+						return null;
+					}
+				});
+			});
+		
+    	</script>
+    </body>
+</html>

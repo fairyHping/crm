@@ -1,0 +1,72 @@
+package com.zhidi.system.controller;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Customer;
+import com.zhidi.system.service.ICustomerService;
+
+/**
+ * 客户池分页查询
+ * @author 石烁
+ *
+ */
+@Controller
+@RequestMapping("/system/customer")
+public class CustomerPoolController{
+	@Autowired
+	private ICustomerService customerService;
+
+	/**
+	 * 转向到system/list_user.jsp
+	 * 
+	 * @return
+	 */
+	@GetMapping("/pool")
+	public String tolist() {
+		return "system/listCustomer";
+	}
+
+	/**
+	 * 处理数据表格的分页请求
+	 * 
+	 * @param page
+	 *            -将分页的页面、一页的记录数、查询条件、以及查询结果封装到该对象中
+	 * @return
+	 */
+	@PostMapping("/pool")
+	@ResponseBody
+	public JsonResult list(PageBean<Customer> page) {
+		page = customerService.findByPageTwo(page);
+		return JsonResult.buildSuccessResult("查询成功", page);
+	}
+	 /**
+     * 客户的新建页面
+     * @return
+     */
+	@GetMapping("/system/toAdd")
+	public String  toAdd(){
+		return  "system/pool/addCustomerPool";
+	}
+	/**
+	 * 客户新建的方法
+	 * @param customer
+	 */
+	@PostMapping("/system/toAdd")
+	@ResponseBody
+	public  JsonResult  save(Customer customer){
+		Integer rows=customerService.save(customer);
+		if(rows>0){
+			return JsonResult.buildSuccessResult("添加成功");
+		}else{
+			return JsonResult.buildSuccessResult("添加失败");
+		}
+	}
+}

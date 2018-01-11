@@ -1,0 +1,179 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=path%>">
+<meta charset="UTF-8">
+<title>线索管理</title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+
+a {
+	text-decoration: none;
+}
+
+#ul li:hover {
+	cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+	<div>
+		<div id="toolbar">
+			<select style="width: 80px;" name="batch">
+				<option value="deleteBatch">批量操作</option>
+				<option value="deleteBatch">批量删除</option>
+			</select> <span style=""> <select style="color: gray">
+					<option>---请选择筛选条件---</option>
+			</select> <select style="color: gray">
+					<option>包含</option>
+			</select> <input class="easyui-textbox" name="content"> <a id="searchBtn"
+				class="easyui-linkbutton"
+				data-options="iconCls:'icon-search',plain:true">搜索</a> <a
+				id="sendSms" class="easyui-linkbutton"
+				data-options="iconCls:'icon-large_smartart',plain:true">发送短信</a> <a
+				id="receiveEmail" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">接收邮件</a>
+			</span> <span style="float: right">  <a
+				id="addBtn" class="easyui-linkbutton"
+				data-options="iconCls:'icon-add',plain:true">新建线索</a> <a
+				id="customer" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">客户工具</a>
+			</span>
+		</div>
+	</div>
+	<table id="leadsPoolList" style="width: 100%">
+	</table>
+
+
+
+	<script type="text/javascript">
+		$(function() {
+			$("#addBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//打开新窗口，新窗口中展示角色列表页面
+				parent.openTopWindow({
+					width : 800,
+					height : 500,
+					title : "添加线索",
+					url : "system/leads/addLeads",
+					onClose : function() {
+						$("#leadsList").datagrid("reload");
+						$("#leadsList").datagrid("uncheckAll");
+					}
+
+				});
+
+			});
+		});
+
+		$(function() {
+			$("#leadsPoolList")
+					.datagrid(
+							{
+								url : "system/leads/listPool",
+								toolbar : "#toolbar",
+								pagination : true,
+								fitColumns : true,
+								rownumbers : true,
+								idField : "leadsId",
+								columns : [ [
+										{
+											field : 'leadsId',
+											width : 60,
+											align : 'center',
+											checkbox : true
+										},
+										{
+											field : 'name',
+											title : '公司名',
+											width : 60
+										},
+										{
+											field : 'contactsName',
+											title : '联系人姓名',
+											width : 60
+										},
+										{
+											field : 'saltname',
+											title : '尊称',
+											width : 60
+										},
+										{
+											field : 'mobile',
+											title : '手机',
+											width : 60
+										},
+										{
+											field : 'nextstepTime',
+											title : '下次联系时间',
+											width : 60
+										},
+										{
+											field : 'nextstep',
+											title : '下次联系内容',
+											width : 60
+										},
+										{
+											field : 'ownerUser',
+											title : '负责人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'creatorUser',
+											title : '创建人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'createTime',
+											title : '创建时间',
+											width : 60
+										},
+										{
+											field : 'operation',
+											title : '操作',
+											width : 100,
+											align : 'center',
+											formatter : function(value,
+													rowData, index) {
+												return "<a href='javascript:void(0)'  onclick='detail("+ rowData.id+ ")'>查看</a>&nbsp;"
+												+"<a href='javascript:void(0)'  onclick='transform("+ rowData.id+ ")'>转换</a>&nbsp;"
+												+"<a href='javascript:void(0)'  onclick='update("+ rowData.id+ ")'>修改</a>&nbsp;"
+												+"<a href='javascript:void(0)'  onclick='get("+ rowData.id+ ")'>领取</a>&nbsp;"
+												+"<a href='javascript:void(0)'  onclick='assign("+ rowData.id+ ")'>分配</a>"
+											}
+										} ] ],
+								loadFilter : function(data) {
+									if (data && data.result) {
+										return data.result;
+									}
+									return null;
+								}
+							});
+		});
+	</script>
+</body>
+</html>

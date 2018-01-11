@@ -1,0 +1,12 @@
+package com.zhidi.system.dao;
+
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Contacts;
+
+
+
+public interface IContactsDao extends BaseDao<Contacts> {
+	
+
+}

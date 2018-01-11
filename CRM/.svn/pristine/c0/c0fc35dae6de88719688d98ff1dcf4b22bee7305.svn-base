@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IProductDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Product">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="cost_price" jdbcType="REAL" property="costPrice" />
+    <result column="suggested_price" jdbcType="REAL" property="suggestedPrice" />
+    <result column="development_team" jdbcType="VARCHAR" property="developmentTeam" />
+    <result column="development_time" jdbcType="TIMESTAMP" property="developmentTime" />
+    <result column="link" jdbcType="VARCHAR" property="link" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  
+  <resultMap type="com.zhidi.system.entity.Product" id="ProductResultMap" extends="BaseResultMap">
+		<association property="productImages" columnPrefix="i_" resultMap="com.zhidi.system.dao.IProductImagesDao.BaseResultMap"/>
+		<association property="user" columnPrefix="u_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"/>
+	</resultMap>
+  
+  <sql id="basicColumns">
+  	p.id,p.category_id,p.name,p.creator_user_id,p.cost_price,p.suggested_price,p.development_team,p.development_time,p.link,p.create_time,p.update_time,p.description
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Product">
+    insert into tb_crm_product (category_id, name, 
+      creator_user_id, cost_price, suggested_price, 
+      development_team, development_time, link, 
+      create_time, update_time, description
+      )
+    values ( #{categoryId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{creatorUserId,jdbcType=INTEGER}, #{costPrice,jdbcType=REAL}, #{suggestedPrice,jdbcType=REAL}, 
+      #{developmentTeam,jdbcType=VARCHAR}, #{developmentTime,jdbcType=TIMESTAMP}, #{link,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Product">
+    update tb_crm_product
+    set category_id = #{categoryId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      cost_price = #{costPrice,jdbcType=REAL},
+      suggested_price = #{suggestedPrice,jdbcType=REAL},
+      development_team = #{developmentTeam,jdbcType=VARCHAR},
+      development_time = #{developmentTime,jdbcType=TIMESTAMP},
+      link = #{link,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, category_id, name, creator_user_id, cost_price, suggested_price, development_team, 
+    development_time, link, create_time, update_time, description
+    from tb_crm_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, category_id, name, creator_user_id, cost_price, suggested_price, development_team, 
+    development_time, link, create_time, update_time, description
+    from tb_crm_product
+  </select>
+  <select id="count" resultType="integer">
+  	select count(p.id) from tb_crm_product p
+  	 <where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source!=null and con.source!='' and con.source!=-1">
+				<choose>
+					<when test="con.contans==1">
+						and #{con.source} like concat("%",#{con.content},"%")
+					</when>
+					<otherwise>
+						and #{con.source}=#{con.content}
+					</otherwise>
+				</choose>	
+				</if>
+			</if>
+		</where> 
+  </select>
+   <select id="findByPage" resultMap="ProductResultMap">
+  	select <include refid="basicColumns"/>,
+  	images.id i_id,
+  	images.product_id i_product_id,
+  	images.is_main i_is_main,
+  	images.name i_name,
+  	images.save_name i_save_name,
+  	images.size i_size,
+  	images.path i_path,
+  	images.create_time i_create_time,
+  	images.sortNum i_sortNum,
+  	user.user_id u_user_id,
+  	user.user_name u_user_name,
+  	user.password u_password,
+  	user.salt u_salt,
+  	user.phone u_phone,
+  	user.email u_email,
+  	user.note u_note,
+  	user.create_time u_create_time,
+  	user.update_time u_update_time
+  	 from tb_crm_product p 
+  	 left join tb_users user on p.creator_user_id=user.user_id
+  	 left join tb_crm_product_images images
+  	 on p.id=images.product_id 
+  	 <where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source!=null and con.source!='' and con.source!=-1">
+				<choose>
+					<when test="con.contans==1">
+						and p.#{con.source} like concat("%",#{con.content},"%")
+					</when>
+					<otherwise>
+						and #{con.source}=#{con.content}
+					</otherwise>
+				</choose>	
+				</if>
+			</if>
+		</where> 
+		limit #{offset},#{pageSize}
+  </select>
+  
+  <select id="findByMaxId" resultType="Integer">
+  	select max(p.id) from tb_crm_product p
+  </select>
+  
+  <select id="findByProductName">
+  	select <include refid="basicColumns"/> from tb_crm_product p where p.name=#{name}
+  </select>
+  
+  <delete id="deleteProduct" parameterType="java.lang.Integer">
+  delete from tb_crm_product
+    where id in 
+    <foreach collection="productIds" item="id" open="(" close=")" separator=",">
+    	#{id}
+    </foreach>
+  </delete>
+</mapper>

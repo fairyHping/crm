@@ -1,0 +1,64 @@
+package com.zhidi.system.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IContractDao;
+import com.zhidi.system.entity.Contract;
+import com.zhidi.system.service.IContractService;
+
+@Service
+public class ContractServiceImpl extends BaseServiceImpl<Contract> implements IContractService{
+	
+	@Autowired
+	private IContractDao contractDao;
+
+	@Override
+	public Integer save(Contract contract){
+		int rows=0;
+		String number=contract.getNumber();
+		List<Contract> list=contractDao.selectAll();
+		if(list!=null &&!list.isEmpty()){
+		for (Contract c:list) {
+			if (c.getNumber().equals(number)) {
+				return rows;
+				}
+			}
+		}
+		contract.setCreateTime(new Date());
+		contract.setUpdateTime(new Date());
+		contract.setStatus(1);
+		contract.setIsDeleted(0);
+		return  contractDao.insert(contract);
+		
+	}
+
+	@Override
+	public Integer deleteContract(String contractIds) {
+		String[] cIds = contractIds.split(",");
+		List<Integer> list = new ArrayList<>();
+		if (cIds != null && !cIds.equals("")) {
+			for (String contractId : cIds) {
+				list.add(Integer.valueOf(contractId));
+			}
+		}
+		return contractDao.deleteContract(list);
+	}
+
+	
+	
+	
+	
+
+	
+	
+	
+	
+}

@@ -1,0 +1,19 @@
+package com.zhidi.system.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IBusinessDao;
+import com.zhidi.system.entity.Business;
+import com.zhidi.system.service.IBusinessService;
+
+@Service
+public class BusinessServiceImpl extends BaseServiceImpl<Business> implements IBusinessService {
+	
+	@Autowired
+	private    IBusinessDao  busniessdao;
+
+	
+}

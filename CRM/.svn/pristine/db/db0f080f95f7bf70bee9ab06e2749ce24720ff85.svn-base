@@ -1,0 +1,205 @@
+package com.zhidi.system.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Product;
+import com.zhidi.system.entity.ProductCategory;
+import com.zhidi.system.entity.ProductImages;
+import com.zhidi.system.entity.User;
+import com.zhidi.system.service.IProductImagesService;
+import com.zhidi.system.service.IProductService;
+import com.zhidi.system.service.IUserService;
+import com.zhidi.system.service.impl.ProductCategoryServiceImpl;
+
+/**
+*2017年10月31日
+*@author 作者: Zhang
+*描述：
+*/
+@Controller
+@RequestMapping("/system/product")
+public class ProductController {
+	
+	@Autowired
+	protected IProductService productService;
+	
+	@Autowired
+	protected IProductImagesService imagesService;
+	
+	@Autowired
+	protected ProductCategoryServiceImpl categoryService;
+	
+	@Autowired
+	protected IUserService userService;
+	
+	/**
+	 * 点击树状列表的产品控制在子窗口打开页面
+	 * @return
+	 */
+	@GetMapping("/list")
+	public  String listProduct1(){
+		//查询任意字段下拉框
+		
+		return "system/product/listProduct";
+	}
+	
+	/**
+	 * 在打开产品jsp同时调用控制器查询数据库中产品信息，展示产品页面相关信息
+	 * 查询展示产品，如果没有传入页数则展示第一页
+	 * @return
+	 */
+	@PostMapping("/listProduct")
+	@ResponseBody
+	public  JsonResult listProduct(PageBean<Product> page){
+		page=productService.findByPage(page);
+		return JsonResult.buildSuccessResult("操作成功", page);
+	}
+	
+	
+	/**
+	 * 点击添加产品
+	 * 跳转控制器查询到相关信息展示到下拉框，返回到添加的jsp
+	 * @return
+	 */
+	@GetMapping("/addProduct")
+	public String addProduct(Model model){
+		List<ProductCategory> list=categoryService.findAll();
+		model.addAttribute("Category", list);
+		return "system/product/addProduct";
+	}
+	
+	/**
+	 * 添加产品
+	 * 文件上传 图片，保存到数据库
+	 * @param file
+	 * @param product
+	 * @param images
+	 * @param session
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	@RequestMapping("/doAddProduct")
+	@ResponseBody
+	public JsonResult doAddProduct(MultipartFile image, Product product, ProductImages images,HttpServletRequest request )throws IllegalStateException, IOException{
+		//MultipartFile
+		product.setCreateTime(new Date());
+		product.setUpdateTime(new Date());
+		int rows=productService.save(product);
+		if(rows>0){
+			//获得刚刚添加的id，保存到产品图片表
+			int maxId=productService.findByMaxId();
+			images.setProductId(maxId);
+			//获取上传的文件
+			if(image.isEmpty()){
+				throw new RuntimeException("未上传任何数据!");
+			}
+			String filename = image.getOriginalFilename();
+			long size = image.getSize();
+			
+			String newName = UUID.randomUUID().toString().replace("-", "")+filename;
+			File  f = new File(request.getServletContext().getRealPath("/tuuu"));
+			if(!f.exists()){
+				f.mkdirs();
+			}
+			
+			//获得文件保存的路径
+			String path=f.getAbsolutePath();
+			
+			//将上传的文件写入到指定的位置
+			image.transferTo(new File(request.getServletContext().getRealPath("/tuuu")+File.separator+newName));
+			images.setPath("tuuu/"+newName);
+			images.setIsMain("是");
+			images.setCreateTime(new Date());
+			images.setName(filename);
+			images.setSaveName(newName);
+			images.setSize(""+size);
+			int i=imagesService.save(images);
+			if(rows>0){
+			return JsonResult.buildSuccessResult("添加成功");
+			}else{
+				return JsonResult.buildFailureResult(i,"添加失败");
+			}
+		}else{
+			return JsonResult.buildFailureResult(rows,"添加失败");
+		}
+	}
+	
+	/**
+	 * 编辑----------
+	 * 获得所要修改数据id，查询数据在修改页面显示要修改的信息，
+	 * @param id
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/updateProduct")
+	public String updateProduct(Integer id,Model model){
+		Product product=productService.findById(id);
+		model.addAttribute("product", product);
+		List<ProductCategory> list=categoryService.findAll();
+		model.addAttribute("Category", list);
+		List<User> users=userService.findAll();
+		model.addAttribute("users", users);
+		return "system/product/updateProduct";
+	}
+	
+	/**
+	 * 执行修改控制器
+	 * @return
+	 */
+	/*@PostMapping("/doUpdateProduct")
+	public JsonResult doUpdateproduct(Product product){
+		Integer rows = productService.update(product);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("修改成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "修改失败！");
+		}
+	}*/
+	
+	/**
+	 * 删除
+	 * @param productIds
+	 * @return
+	 */
+	@PostMapping("/deleteProduct")
+	@ResponseBody
+	public JsonResult deleteUser(String productIds) {
+		Integer rows = productService.deleteProduct(productIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "删除失败！");
+		}
+	}
+	
+	//查看详情
+	@GetMapping("/productInfo")
+	public String productInfo(Model model,Integer id){
+		Product product=productService.findProduct(id);
+		model.addAttribute("product", product);
+		List<ProductCategory> list=categoryService.findAll();
+		model.addAttribute("Category", list);
+		return "system/product/productInfo";
+	}
+}
+

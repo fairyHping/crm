@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IContactsDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Contacts">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="post" jdbcType="VARCHAR" property="post" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="saltname" jdbcType="VARCHAR" property="saltname" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="qq_no" jdbcType="VARCHAR" property="qqNo" />
+    <result column="adress" jdbcType="VARCHAR" property="adress" />
+    <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="customer_id" jdbcType="VARCHAR" property="customerId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="delete_status" jdbcType="INTEGER" property="deleteStatus" />
+    <result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+  </resultMap>
+  
+  
+	<resultMap type="com.zhidi.system.entity.Contacts" id="ContactsResultMap" extends="BaseResultMap">
+		<association property="user" column="creatorUserId" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap" columnPrefix="u_"/>
+		<association property="customer" column="customerId" resultMap="com.zhidi.system.dao.ICustomerDao.BaseResultMap" columnPrefix="cu_"/>
+	
+	</resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_contacts
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Contacts">
+    <!-- insert into tb_crm_contacts (id, creator_user_id, name, 
+      post, department, sex, 
+      saltname, telephone, email, 
+      qq_no, adress, zip_code, 
+      description, customer_id, create_time, 
+      update_time, delete_status, delete_user_id, 
+      delete_time)
+    values (#{id,jdbcType=INTEGER}, #{creatorUserId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{post,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, 
+      #{saltname,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{qqNo,jdbcType=VARCHAR}, #{adress,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{customerId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteStatus,jdbcType=INTEGER}, #{deleteUserId,jdbcType=INTEGER}, 
+      #{deleteTime,jdbcType=TIMESTAMP}) -->
+      insert into tb_crm_contacts (name,saltname,telephone, 
+      qq_no, email,create_time)
+      values (#{name,jdbcType=VARCHAR}, #{saltname,jdbcType=VARCHAR},
+       #{telephone,jdbcType=VARCHAR},#{qqNo,jdbcType=VARCHAR},
+       #{email,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Contacts">
+    update tb_crm_contacts
+    set 
+      name = #{name,jdbcType=VARCHAR},
+      saltname = #{saltname,jdbcType=VARCHAR},
+      customer_id = #{customerId,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      qq_no = #{qqNo,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      creator_user_id=#{creatorUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+       where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ContactsResultMap">
+    select
+		c.id,
+		c.name,
+		c.saltname,
+		c.customer_id,
+		c.telephone,
+		c.qq_no,
+		c.email,
+		c.creator_user_id,
+		c.create_time,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.customer_id  as      cu_customer_id,
+		cu.name  as  cu_name,
+		cu.industry as  cu_industry,
+		cu.rating  as  cu_rating,
+		cu.address  as  cu_address,
+		cu.zip_code  as  cu_zip_code,
+		cu.owner_user_id  as  cu_owner_user_id,
+		cu.creator_user_id  as  cu_creator_user_id,
+		cu.create_time  as  cu_create_time,
+		cu.update_time	as  cu_update_time	
+		from tb_crm_contacts c 
+		left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_crm_customer cu on c.customer_id=cu.customer_id
+        where c.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, creator_user_id, name, post, department, sex, saltname, telephone, email, 
+    qq_no, adress, zip_code, description, customer_id, create_time, update_time, delete_status, 
+    delete_user_id, delete_time
+    from tb_crm_contacts
+  </select>
+  <!-- 根据查询条件获取总记录数 -->
+	 <select id="count" resultType="integer">
+		select count(id) from tb_crm_contacts
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					name = #{con.name}
+				</if>
+			</if>
+		</where>
+	</select>
+  <!-- 分页查询语句 -->
+	<select id="findByPage" resultMap="ContactsResultMap">
+		select
+		c.id,
+		c.name,
+		c.saltname,
+		c.customer_id,
+		c.telephone,
+		c.qq_no,
+		c.email,
+		c.creator_user_id,
+		c.create_time,
+		u.user_id   as u_user_id, 
+		u.user_name   as u_user_name,
+		u.password   as   u_password,
+		u.salt   as  u_salt,
+		u.phone   as   u_phone,
+		u.email   as u_email,
+		u.status  as u_status,
+		u.note  as  u_note,
+	 	u.create_time   as      u_create_time,
+	 	u.update_time   as      u_update_time,
+		cu.customer_id  as      cu_customer_id,
+		cu.name  as  cu_name,
+		cu.industry as  cu_industry,
+		cu.rating  as  cu_rating,
+		cu.address  as  cu_address,
+		cu.zip_code  as  cu_zip_code,
+		cu.owner_user_id  as  cu_owner_user_id,
+		cu.creator_user_id  as  cu_creator_user_id,
+		cu.create_time  as  cu_create_time,
+		cu.update_time	as  cu_update_time	
+		from tb_crm_contacts c 
+		left join tb_users u on c.creator_user_id=u.user_id 
+		left join tb_crm_customer cu on c.customer_id=cu.customer_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.name!=null and con.name!=''">
+					u.name = #{con.name}
+				</if>
+             </if>
+		</where>
+		limit #{offset},#{pageSize}
+	</select>  
+	<!-- 删除联系人，可批量删除 -->
+	<delete id="deleteContacts">
+	delete from tb_crm_contacts
+		where id in
+		<foreach collection="contactsIds" item="id" open="(" close=")" separator=",">
+		#{id}
+		</foreach>	
+	</delete> 		
+</mapper>

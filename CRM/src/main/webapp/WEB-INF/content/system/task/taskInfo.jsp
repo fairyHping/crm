@@ -1,0 +1,116 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();//获取应用程序的根路径
+	//获取应用程序的全路径
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+<base href=<%=path%>>
+<meta charset="UTF-8">
+<title></title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+#div {
+	text-align: center;
+	width: 750px;
+	margin-left:15px;
+	margin-right: 30px;
+	margin-top:20px;
+}
+
+table{
+	border: 1px solid #f5f5f5;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td{
+	border: 1px solid #f5f5f5;
+	height: 40px;
+}
+#other {
+	text-align: left;
+	line-height: 40px;
+}
+
+.td1 {
+	text-align: right;
+	background-color: #f5f5f5;
+}
+
+.td2 {
+	text-align: left
+}
+</style>
+</head>
+<body>
+	<div id="div">
+		<form id="taskForm">
+			<div id="main" class="easyui-panel">
+				 <table style=" border:1px solid ; border-collapse: collapse;height: 500px;width: 95%" >
+					<tr>
+						<td colspan="4" id="other"><strong>主要信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">主题：</td>
+						<td class="td2">${task.subject}</td>
+						<td class="td1">负责人：</td>
+						<td class="td2">
+							<c:forEach items="${requestScope.users }" var="user">
+									<c:if test="${user.userId eq task.ownerUserId}">
+										${user.userName }
+									</c:if>												
+							</c:forEach>
+						</td>
+					</tr>
+					<tr>
+						<td class="td1">任务相关人：</td>
+						<td class="td2">${task.aboutUsers }
+						<td class="td1">创建人：</td>
+						<td class="td2">
+							<c:forEach items="${requestScope.users }" var="user">
+									<c:if test="${user.userId eq task.creatorUserId}">${user.userName }
+									</c:if>												
+							</c:forEach>
+
+						</td>
+					</tr>
+					<tr>
+	    			<td class="td1">状态:</td>
+	    			<td class="td2">${task.status }</td>
+	    			<td class="td1">优先级:</td>
+	    			<td class="td2">${task.priority }</td>
+	    		</tr>
+					<tr>
+						<td class="td1">截止日期：</td>
+						<td class="dueDate"><fmt:formatDate value="${task.dueDate }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+						<td class="td1">更新时间：</td>
+						<td class="updateTime"><fmt:formatDate value="${task.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+					</tr>
+					<tr>
+						<td class="td1">创建日期：</td>
+						<td class="createTime"><fmt:formatDate value="${task.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+						
+					</tr>
+					<tr>
+						<td colspan="4" id="other"><strong>附加信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1">描述：</td>
+						<td colspan="3" class="td2"><textarea class="theme-textbox-radius"
+								rows="5" cols="50" name="description"
+								readonly="readonly">${task.description }</textarea></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+
+</body>
+</html>

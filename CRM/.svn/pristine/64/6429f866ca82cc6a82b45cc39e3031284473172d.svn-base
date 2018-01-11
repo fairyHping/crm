@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IContractDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Contract">
+    <id column="contract_id" jdbcType="INTEGER" property="contractId" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="due_date" jdbcType="DATE" property="dueDate" />
+    <result column="owner_user_id" jdbcType="INTEGER" property="ownerUserId" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="end_date" jdbcType="DATE" property="endDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <sql id="basicColumn">
+  	c.contract_id,c.number,c.business_id,c.price,c.due_date,c.owner_user_id,c.creator_user_id,c.description,c.create_time,c.update_time,c.start_date,c.end_date,c.status,c.is_deleted,c.delete_user_id,c.delete_time,c.content,
+  </sql>
+  
+  <resultMap type="com.zhidi.system.entity.Contract" id="ContractMap" extends="BaseResultMap">
+  	<association property="customer" columnPrefix="cus_" resultMap="com.zhidi.system.dao.ICustomerDao.BaseResultMap"/>
+  	<association property="contacts" columnPrefix="con_" resultMap="com.zhidi.system.dao.IContactsDao.BaseResultMap"/>
+  	<association property="user" columnPrefix="u_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"/>
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_contract
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Contract">
+    insert into tb_crm_contract (contract_id, number, business_id, 
+      price, due_date, owner_user_id, 
+      creator_user_id, description, create_time, 
+      update_time, start_date, end_date, 
+      status, is_deleted, delete_user_id, 
+      delete_time, content)
+    values (#{contractId,jdbcType=INTEGER}, #{number,jdbcType=VARCHAR}, #{businessId,jdbcType=INTEGER}, 
+      #{price,jdbcType=DECIMAL}, #{dueDate,jdbcType=DATE}, #{ownerUserId,jdbcType=INTEGER}, 
+      #{creatorUserId,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{startDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{status,jdbcType=INTEGER}, #{isDeleted,jdbcType=INTEGER}, #{deleteUserId,jdbcType=INTEGER}, 
+      #{deleteTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Contract">
+    update tb_crm_contract
+    set number = #{number,jdbcType=VARCHAR},
+      business_id = #{businessId,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      due_date = #{dueDate,jdbcType=DATE},
+      owner_user_id = #{ownerUserId,jdbcType=INTEGER},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      start_date = #{startDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      status = #{status,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      delete_user_id = #{deleteUserId,jdbcType=INTEGER},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select contract_id, number, business_id, price, due_date, owner_user_id, creator_user_id, 
+    description, create_time, update_time, start_date, end_date, status, is_deleted, 
+    delete_user_id, delete_time, content
+    from tb_crm_contract
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select contract_id, number, business_id, price, due_date, owner_user_id, creator_user_id, 
+    description, create_time, update_time, start_date, end_date, status, is_deleted, 
+    delete_user_id, delete_time, content
+    from tb_crm_contract
+  </select>
+  <!-- 分页查询 -->
+  <select id="findByPage" resultMap="ContractMap">
+  	select <include refid="basicColumn"/>
+  		rco.contract_id,
+  		rcu.customer_id,
+  		cus.customer_id cus_customer_id,
+  		rcu.business_id,
+  		cus.name cus_name,
+  		con.name con_name,
+  		u.user_name u_user_name
+   	from tb_crm_contract c
+  		left join tb_users u on c.owner_user_id=u.user_id
+  		left join tb_crm_r_business_contract rco on c.contract_id=rco.contract_id
+  		left join tb_crm_r_business_customer rcu on rco.business_id=rcu.business_id
+  		left join tb_crm_customer cus on rcu.customer_id=cus.customer_id
+  		left join tb_crm_contacts con on cus.contacts_id=con.id
+  		<where>
+  			c.status=1
+  		</where>
+
+  		limit #{offset},#{pageSize};
+  </select>
+  <select id="count" resultType="integer">
+  	select count(contract_id) from tb_crm_contract where tb_crm_contract.status=1;
+  </select>
+  
+  <!-- 按userId批量删除,注意是逻辑删除，0表示禁用，1表示正常，2表示删除 -->
+	<update id="deleteContract">
+		update tb_crm_contract set status=2
+   	 	where contract_id in 
+    	<foreach collection="contractIds" item="contractId" open="(" close=")" separator=",">
+    		#{contractId}
+   		</foreach>
+	</update>
+  
+</mapper>

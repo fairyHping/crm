@@ -1,0 +1,58 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Leads;
+
+public interface ILeadsDao extends BaseDao<Leads> {
+
+	/**
+	 * 根据线索id删除线索，可批量删除
+	 * @param leadsIds -线索id
+	 * @return
+	 */
+	Integer deleteBatch(@Param("leadsIds")List<Integer> leadsIds);
+
+	/**
+	 * 将线索放入线索池，可批量放入
+	 * @param leadsIds -线索id
+	 * @return
+	 */
+	Integer toPoolBatch(@Param("leadsIds")List<Integer> leadsIds);
+
+	/**
+	 * 根据线索id将线索从回收站撤回
+	 * @param leadsIds -线索id
+	 * @return
+	 */
+	Integer withdrawLeads(@Param("leadsIds") List<Integer> leadsIds);
+
+	/**
+	 * 进行线索转换
+	 * @param leadsIds -线索id
+	 * @param userId -线索转换人id
+	 * @return
+	 */
+	Integer leadsTransform(@Param("leadsIds")List<Integer> leadsIds,@Param("userId") Integer userId);
+
+	/**
+	 * 当前用户领取线索池中的线索
+	 * @param leadsId -被领取的线索id
+	 * @param userId -当前用户的id
+	 * @return
+	 */
+	Integer getLeads(@Param("leadsId")Integer leadsId,@Param("userId") Integer userId);
+
+	/**
+	 * 给用户分配线索，可批量分配
+	 * @param leadsIds -线索id
+	 * @param userId -用户id
+	 * @return
+	 */
+	Integer assignBatch(@Param("leadsIds")List<Integer> leadsIds,@Param("userId") Integer userId);
+
+
+}

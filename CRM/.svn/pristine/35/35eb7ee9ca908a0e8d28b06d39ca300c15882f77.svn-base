@@ -1,0 +1,30 @@
+
+
+package com.zhidi.system.service;
+
+import java.util.List;
+
+import com.zhidi.system.entity.Dictionary;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年11月2日
+* 类描述：
+*/
+public interface IDictionaryService {
+
+	/**
+	 * @return
+	 */
+	List<Dictionary> findAll();
+
+	/**
+	 * 根据字典中的类型名查询对应的所有字典值
+	 * @param type
+	 * @return
+	 */
+	List<Dictionary> findStatus();
+
+}
+
+

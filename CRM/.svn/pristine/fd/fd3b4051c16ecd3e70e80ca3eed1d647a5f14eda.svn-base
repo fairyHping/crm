@@ -1,0 +1,277 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+        <base href="<%=path%>">
+        <meta charset="UTF-8">
+        <title>客户管理</title>
+        <%@include file="../script.html" %>
+    <style type="text/css">
+#ul li {
+	text-decoration: none; /*去掉前面的圆点*/
+	list-style: none;
+	float: left;
+	display: block; /* 将链接设为块级元素 */
+	padding: 0px 3px; /* 设置内边距 */
+	text-decoration: none; /* 去掉下划线 */
+	border-right: 1px solid #000; /* 在左侧加上分隔线 */
+	font-size: 14px;
+}
+
+#ul {
+	background-color: #F4F4F4;
+	padding: 20px;
+}
+
+a {
+	text-decoration: none;
+}
+
+#ul li:hover {
+	cursor: pointer;
+}
+</style>
+    
+    </head>
+    <body>
+    <form id="form" method="post">
+      <div>
+	    	<div style="background-color: #ECECFF; padding-bottom: 1px">
+			<ul id="ul">
+				<li><strong>视图：☰</strong></li>
+				<li>全部</li>
+				<li>我的客户</li>
+				<li>下属</li>
+				<li>今日新建</li>
+				<li>本周新建</li>
+				<li>本月新建</li>
+				<li>我的关注</li>
+				<li>我的共享</li>
+				<li>共享给我的</li>
+				<li>回收站</li>
+				<li>高级搜索</li>
+			</ul>
+		</div>
+	    	<div style="padding: 10px">
+	    	      <select class="easyui-combobox" id="source">
+	    	        <option value="">批量操作</option>
+	    	        <option value="name">客户名</option>
+	    	        <option value="createUserId">创建者</option>
+	    	        <option>批量共享</option>
+	    	        <option>取消关注</option>
+	    	        <option>取消共享</option>
+	    	      </select>
+		    	  <span style="">
+		    	   <input type="text" id="name" class="easyui-textbox " style="width: 25%;">
+	               <a id="searchBtn" class="easyui-linkbutton " data-options="iconCls:'icon-search',plain:true">搜索</a> 
+		    	      <a  id="smsBtn" class="easyui-linkbutton" data-options="iconCls:'icon-sum',plain:true">送短信</a>
+		    	      <a  id="emailBtn" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true">接收邮件</a>
+	    	      </span>
+	    	      <a  id="tabx" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" >新建客户</a>
+	    	       <a  id="deleteBtn" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',plain:true">删除</a>
+	    	        <a  id="updateBtn" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">修改</a>
+	    	      <a  id="toolBtn" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true">客户工具</a>
+    	       </div>	 	 
+    	</div>
+    	<table id="customerList" style="width:100%"></table>
+    	</form>
+    	<div id="topWindow"></div>
+    	
+    
+    	<script type="text/javascript">	
+   	  //新建客户信息在弹窗页面
+   	 $("#tabx").on("click",function(){	          
+           	parent.openTopWindow({url :"system/customer/system/add",
+   		 	title:"客户信息",	   		 	
+   		 	 width : 800,
+             height : 500,
+             onClose : function() {
+ 				$("#customerData").datagrid("reload");
+ 				$("#customerData").datagrid("uncheckAll");
+ 			}       
+			});
+           	    	          
+       });
+   	  
+   	  
+     //为搜索按钮添加事件处理函数
+ $(function(){
+	 $('#searchBtn').on("click", function(event) {
+		event.preventDefault();
+		var date = {condition : {
+			'source' : $('#source').combobox('getValue'),
+			'name' : $('#name').textbox('getValue')}
+		};
+		
+		loadCustomer(date)
+	});
+	 function loadCustomer(date){
+		 $("#customerList").datagrid('load', date);
+	 } 
+ });
+     
+     
+     
+   	        //客户列表信息
+			$(function(){
+				$("#customerList").datagrid({
+					url : "system/customer/list",
+					toolbar : "#toolbar",
+					pagination : true,
+					fitColumns : true,
+					rownumbers : true,
+					idField : "customerId",
+					columns : [[
+						{field:'customerId',width:70,align:'center',checkbox:true},		
+						{field:'name',title:'客户名称',width:70,align:'center'},
+						{field:'industry',title:'客户行业',width:70,align:'center'},
+						{field:'rating',title:'评分',width:70,align:'center'},
+						{field:'address',title:'客户联系地址',width:70,align:'center'},
+						{field:'zipCode',title:'邮编',width:70,align:'center'},
+						{field:'cUser',title:'拥有者',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.userName;
+							}
+							return "";
+						} },
+						{field:'user',title:'创建者',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.userName;
+							}
+							return "";
+						} },
+						{field:'createTime',title:'创建时间',width:70,align:'center'},
+						{field:'updateTime',title:'更新时间',width:70,align:'center'},
+					    {field:'opreation',title:'操作',width:100,align:'center',formatter:function(value,rowData,index){
+                                 return "<a id=find href='javascript:void(0)'  onclick='detail("+rowData.customerId+")'>查看</a>&nbsp;&nbsp;"   
+						    }}
+					]],
+					loadFilter: function(data){
+						if(data && data.result){
+							return data.result;
+							$("#customerList").datagrid("reload");
+						}
+						return null;
+					}
+				});
+			});
+
+			//删除
+			function removeCustomer(url, customerIds) {
+				parent.$.messager.confirm('操作提示', '确定要删除吗?', function(r) {
+					if (r) {
+						$.post(url, {
+							"customerIds" : customerIds
+						}, function(data) {
+							if (data.success) {
+								parent.$.messager.show({
+									"title" : "提示",
+									"msg" : data.message,
+									"timeout" : 6000
+								})
+								$("#customerList").datagrid("reload");
+							} else {
+								parent.$.messager.alert({
+									title : "提示",
+									msg : data.message
+								})
+							}
+						}, "json")
+					}
+				});
+
+			}
+
+			/* 删除某一行或多行数据 */
+			$("#deleteBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//获取选中的客户，选中的是一整行数据
+				var rows = $("#customerList").datagrid("getChecked");
+				//没有选中某一个客户时进行提示
+				if (!rows || rows.length < 1) {
+					parent.$.messager.alert("警告", "必须选中要删除的用户！", "warning");
+					return;
+				}
+				var customerIds = new Array();
+				$.each(rows, function(index, obj) {
+					if (obj) {
+						customerIds.push(obj.customerId);
+					}
+				});
+
+				removeCustomer("system/customer/delCustomer",customerIds.join(","))
+			});
+			
+		           
+			$("#updateBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//获取选中的客户，选中的是一整行数据
+				var rows = $("#customerList").datagrid("getChecked");
+				//没有选中某一个客户时进行提示
+				if (!rows || rows.length < 1) {
+					parent.$.messager.alert("警告", "必须选中要修改的用户！", "warning");
+					return;
+				}
+				if (rows && rows.length > 1) {
+					parent.$.messager.alert("警告", "只能选中一位用户！", "warning");
+					return;
+				}
+
+				//获取到客户的id
+				var customerIds = new Array();
+				$.each(rows, function(index, obj) {
+					if (obj) {
+						customerIds.push(obj.customerId);
+					}
+				});
+
+				 /*  //编辑客户信息在弹窗页面 */
+			           	parent.openTopWindow({
+			             url :"system/customer/edit?customerId="+customerIds,
+			   		 	title:"编辑客户",	
+			   		      width : 800,
+			              height : 500,
+			             onClose : function() {
+			 				$("#customerData").datagrid("reload");
+			 				$("#customerData").datagrid("uncheckAll");
+			 			}       
+						});
+				 
+			          
+			});
+		
+			  /*  //查看客户信息在弹窗页面 */
+        	function detail(customerId){	
+				parent.openTopWindow({
+		   		 url:"system/customer/find?customerId="+customerId,
+	   		 	title:"查看客户详情",	   		 	
+	   		 	width : 800,
+                height : 400,
+                onClose : function() {
+	 				$("#customerData").datagrid("reload");
+	 				$("#customerData").datagrid("uncheckAll");
+	 			}       
+				});   	          
+    		}
+			  
+        	/* 快速检索工具栏 */
+		 	$(function() {
+			/* 快速检索工具栏 */
+			$("li").on("click",function(){
+				var li=$(this).text();
+				$("#customerList").datagrid("load", {
+					"condition" : {
+						"li":li
+					}
+				});
+			});
+		 	});
+    	</script>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IContractDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Contract">
+    <id column="contract_id" jdbcType="INTEGER" property="contractId" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="due_date" jdbcType="DATE" property="dueDate" />
+    <result column="owner_user_id" jdbcType="INTEGER" property="ownerUserId" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="end_date" jdbcType="DATE" property="endDate" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_contract
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Contract">
+    insert into tb_crm_contract (contract_id, number, business_id, 
+      price, due_date, owner_user_id, 
+      creator_user_id, description, create_time, 
+      update_time, start_date, end_date, 
+      status, is_deleted, delete_user_id, 
+      delete_time, content)
+    values (#{contractId,jdbcType=INTEGER}, #{number,jdbcType=VARCHAR}, #{businessId,jdbcType=INTEGER}, 
+      #{price,jdbcType=DECIMAL}, #{dueDate,jdbcType=DATE}, #{ownerUserId,jdbcType=INTEGER}, 
+      #{creatorUserId,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{startDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{status,jdbcType=VARCHAR}, #{isDeleted,jdbcType=INTEGER}, #{deleteUserId,jdbcType=INTEGER}, 
+      #{deleteTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Contract">
+    update tb_crm_contract
+    set number = #{number,jdbcType=VARCHAR},
+      business_id = #{businessId,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      due_date = #{dueDate,jdbcType=DATE},
+      owner_user_id = #{ownerUserId,jdbcType=INTEGER},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      start_date = #{startDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      delete_user_id = #{deleteUserId,jdbcType=INTEGER},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select contract_id, number, business_id, price, due_date, owner_user_id, creator_user_id, 
+    description, create_time, update_time, start_date, end_date, status, is_deleted, 
+    delete_user_id, delete_time, content
+    from tb_crm_contract
+    where contract_id = #{contractId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select contract_id, number, business_id, price, due_date, owner_user_id, creator_user_id, 
+    description, create_time, update_time, start_date, end_date, status, is_deleted, 
+    delete_user_id, delete_time, content
+    from tb_crm_contract
+  </select>
+</mapper>

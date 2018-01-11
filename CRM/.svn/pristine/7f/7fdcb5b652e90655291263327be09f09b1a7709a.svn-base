@@ -1,0 +1,132 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";
+%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+  <head>
+        <base href="<%=path%>">
+        <meta charset="UTF-8">
+        <title>用户管理</title>
+        <%@include file="../../script.html" %>
+    </head>
+    <body>
+    	<h4 >产品列表</h4><br/>
+
+<!-- 工具条  用于查询 增删改查 -->
+<div id="toolbar" >
+	<a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-remove',plain:true">删除</a>
+	<select >
+		<option value="-1">任意字段</option>
+		<%-- <c:forEach items="${requestScope.products }" var="profuct">
+			<option value="${profuct.id}">${product.name}</option>
+		</c:forEach> --%>
+	</select>
+	<select>
+		<option>包含</option>
+		<option></option>
+	</select>
+	<input type="text" name="productname" class="easyui-textbox">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">搜索</a>
+    	<span style="margin-left:100px;">
+    		<a class="easyui-linkbutton " id="add-button" data-options="iconCls:'icon-add',plain:true" style="float: right;margin-right: 20px">添加产品</a>
+    		<a class="easyui-linkbutton " data-options="iconCls:'icon-add',plain:true" style="float: right;margin-right: 30px">产品工具</a>
+    	</span>
+</div>
+   <table id="productList" style="width:100%"></table>
+    <script type="text/javascript">
+    		//为分配添加、修改、删除、添加角色按钮绑定事件
+			$(function(){
+				$("#add-button").on("click",function(event){
+					//阻止默认的连接的跳转行为
+					event.preventDefault();
+					
+					//打开新窗口，新窗口中展示角色列表页面
+					parent.openTopWindow({width:800,
+							height:600,
+							title:"添加产品",
+							url:"system/product/addProduct",
+							onClose : function(){
+								$("#listProduct").datagrid("reload");
+							}
+						});
+				});
+					
+					//编辑-----------------
+					$("#update-button").on("click",function(event){
+						//阻止默认的连接的跳转行为
+						event.preventDefault();
+						//获取到选中的用户
+						var rows = $("#ListProduct").datagrid("getChecked");
+						//没有选中某一个用户时进行提示
+						if(!rows || rows.length<1){
+							parent.$.messager.alert("警告","必须选中为其分配角色 用户！","warning");
+							return;
+						}
+					//获取到用户的id
+					var ids = new Array();
+					$.each(rows,function(index,obj){
+						if(obj){
+							ids.push(obj.id);
+						}
+					});
+					//打开新窗口，新窗口中展示角色列表页面
+					parent.openTopWindow({width:600,
+							height:400,
+							title:"详情",
+							url:"system/user/assign?userIds="+userIds.join(","),
+							onClose : function(){
+								$("#productList").datagrid("reload");
+							}
+						});
+					
+				});
+			});
+    	
+			$(function(){
+				$("#productList").datagrid({
+					url : "system/product/listProduct",
+					toolbar : "#toolbar",
+					pagination : true,
+					fitColumns : true,
+					rownumbers : true,
+					idField : "id",
+					columns : [[
+						{field:'id', title:'全选',width:80,align:'center',checkbox:true},
+						{field:'productImages',title:'图片',align:'center',width:80,formatter:function(value){
+							if(value){
+								//<img id="chooseLegalIdCardPreview" alt="" src="upload/${requestScope.payer.legalIdCardImageURL }"/>
+								return value.path;
+							}
+							return "";
+						}},
+						{field:'categoryId',title:'用户名',align:'center',width:80},
+						{field:'name',title:'产品名称',align:'center',width:80},
+						{field:'link',title:'详情连接',align:'center',width:80},
+						{field:'user',title:'创始人',align:'center',width:80,formatter:function(value){
+							if(value ){
+								
+								return value.userName;
+							}
+							return "";
+						}},
+						{field:'opreation',title:'操作',align:'center',width:80,formatter:function(value,rowData,index){
+		                    return "<a href='javascript:void(0)' onclick='detail("+rowData.id+")'>查看</a>&nbsp;&nbsp;"
+		                    +"<a href='javascript:void(0)' onclick='edit("+rowData.id+")'>编辑   </a>"                              
+		                    }},
+					 	
+					]],
+					loadFilter: function(data){
+						if(data && data.result){
+							return data.result;
+						}
+						return null;
+					}
+				});
+			});
+		
+    	</script>
+    </body>
+</html>

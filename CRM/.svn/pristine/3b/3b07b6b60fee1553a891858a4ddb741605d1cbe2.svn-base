@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IProductImagesDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.ProductImages">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="product_id" jdbcType="INTEGER" property="productId" />
+    <result column="is_main" jdbcType="VARCHAR" property="isMain" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="save_name" jdbcType="VARCHAR" property="saveName" />
+    <result column="size" jdbcType="VARCHAR" property="size" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="sortnum" jdbcType="INTEGER" property="sortnum" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_product_images
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.ProductImages">
+    insert into tb_crm_product_images (id, product_id, is_main, 
+      name, save_name, size, 
+      path, create_time, sortnum
+      )
+    values (#{id,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{isMain,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{saveName,jdbcType=VARCHAR}, #{size,jdbcType=VARCHAR}, 
+      #{path,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{sortnum,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.ProductImages">
+    update tb_crm_product_images
+    set product_id = #{productId,jdbcType=INTEGER},
+      is_main = #{isMain,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      save_name = #{saveName,jdbcType=VARCHAR},
+      size = #{size,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      sortnum = #{sortnum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, product_id, is_main, name, save_name, size, path, create_time, sortnum
+    from tb_crm_product_images
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, product_id, is_main, name, save_name, size, path, create_time, sortnum
+    from tb_crm_product_images
+  </select>
+</mapper>

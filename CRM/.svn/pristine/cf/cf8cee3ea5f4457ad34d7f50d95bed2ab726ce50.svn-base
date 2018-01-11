@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IAnnouncementDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Announcement">
+    <id column="announcement_id" jdbcType="INTEGER" property="announcementId" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="color" jdbcType="VARCHAR" property="color" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="isshow" jdbcType="INTEGER" property="isshow" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_announcement
+    where announcement_id = #{announcementId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Announcement">
+    insert into tb_crm_announcement (announcement_id, order_id, user_id, 
+      title, create_time, update_time, 
+      color, department, status, 
+      isshow, content)
+    values (#{announcementId,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{color,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{isshow,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Announcement">
+    update tb_crm_announcement
+    set order_id = #{orderId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      color = #{color,jdbcType=VARCHAR},
+      department = #{department,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      isshow = #{isshow,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where announcement_id = #{announcementId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select announcement_id, order_id, user_id, title, create_time, update_time, color, 
+    department, status, isshow, content
+    from tb_crm_announcement
+    where announcement_id = #{announcementId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select announcement_id, order_id, user_id, title, create_time, update_time, color, 
+    department, status, isshow, content
+    from tb_crm_announcement
+  </select>
+</mapper>

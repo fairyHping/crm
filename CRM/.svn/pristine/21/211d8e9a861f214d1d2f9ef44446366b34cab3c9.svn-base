@@ -1,0 +1,8 @@
+package com.zhidi.system.dao;
+
+import com.zhidi.base.BaseDao;
+import com.zhidi.system.entity.Leads;
+
+public interface ILeadsDao extends BaseDao<Leads> {
+    
+}

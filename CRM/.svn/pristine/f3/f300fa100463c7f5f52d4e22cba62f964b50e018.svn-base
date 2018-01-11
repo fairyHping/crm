@@ -1,0 +1,10 @@
+package com.zhidi.system.service;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.SmsRecord;
+
+public interface ISmsRecordService extends BaseService<SmsRecord> {
+
+	Integer deleteSmsRecord(String smsRecordIds);
+
+}

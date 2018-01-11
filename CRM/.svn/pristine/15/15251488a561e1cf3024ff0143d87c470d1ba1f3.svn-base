@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IDictionaryDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Dictionary">
+    <id column="dic_id" jdbcType="INTEGER" property="dicId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="value_name" jdbcType="VARCHAR" property="valueName" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_dictionary
+    where dic_id = #{dicId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Dictionary">
+    insert into tb_dictionary (dic_id, type, value_name, 
+      value)
+    values (#{dicId,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{valueName,jdbcType=VARCHAR}, 
+      #{value,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Dictionary">
+    update tb_dictionary
+    set type = #{type,jdbcType=VARCHAR},
+      value_name = #{valueName,jdbcType=VARCHAR},
+      value = #{value,jdbcType=VARCHAR}
+    where dic_id = #{dicId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select dic_id, type, value_name, value
+    from tb_dictionary
+    where dic_id = #{dicId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select dic_id, type, value_name, value
+    from tb_dictionary
+  </select>
+  <!-- 查询字典中的所有状态 -->
+  <select id="findStatus" resultMap="BaseResultMap">
+  select dic_id, type, value_name, value
+    from tb_dictionary where type='status'
+  </select>
+  <!-- 查询字典中的所有尊称 -->
+  <select id="findSaltname" resultMap="BaseResultMap">
+  select dic_id, type, value_name, value
+    from tb_dictionary where type='saltname'
+  </select>
+</mapper>

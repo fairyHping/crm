@@ -1,0 +1,21 @@
+package com.zhidi.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/system/add")
+public class AddController {
+ 
+	@RequestMapping("/toadd")
+	public   String   toAdd(){
+		
+		return   "system/addCustomer";
+	}
+	
+	@RequestMapping("/toadd1")
+	public   String   toAdd1(){
+		
+		return   "system/addTaxPayer";
+	}
+}

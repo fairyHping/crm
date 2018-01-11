@@ -1,0 +1,107 @@
+
+package com.zhidi.system.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.base.exception.AuthenticationException;
+import com.zhidi.system.dao.IUserDao;
+import com.zhidi.system.dao.IUserRoleDao;
+import com.zhidi.system.entity.User;
+import com.zhidi.system.entity.UserRole;
+import com.zhidi.system.service.IUserService;
+import com.zhidi.util.AuthUtil;
+
+/**
+ * @author 作者:ZHP createTime 创建时间:2017年10月30日 类描述：
+ */
+@Service
+public class UserServiceImpl extends BaseServiceImpl<User> implements IUserService {
+
+	@Autowired
+	private IUserDao userDao;
+
+	@Autowired
+	private IUserRoleDao userRoleDao;
+
+	/**
+	 * 根据用户名和密码查询对应的用户信息
+	 * 
+	 * @param username
+	 *            -用户名
+	 * @param password
+	 *            -密码
+	 * @return -返回值为User对象
+	 */
+	@Override
+	public User findByUser(String username, String password) {
+		User user = userDao.findByUsername(username);
+		if (user == null) {
+			throw new AuthenticationException("该用户不存在！");
+		}
+		if (user.getStatus() != 1) {
+			throw new AuthenticationException("该用户状态异常（已被禁用或删除），请与管理员联系！");
+		}
+		password = AuthUtil.encryptPassword(user.getSalt(), password);
+		if (!password.equals(user.getPassword())) {
+			throw new AuthenticationException("密码错误！");
+		}
+		return user;
+	}
+
+	@Override
+	public void assignRoles(String userIds, String roleIds) {
+		// 将用户id和它对应的角色id封装为UserRole
+		List<UserRole> list = new ArrayList<>();
+
+		String[] uIds = userIds.split(",");
+		String[] rIds = null;
+		if (roleIds != null && !roleIds.isEmpty()) {
+			rIds = roleIds.split(",");
+		}
+		for (String userId : uIds) {
+			if (rIds != null && rIds.length > 0) {
+				for (String roleId : rIds) {
+					UserRole ur = new UserRole();
+					ur.setUserId(Integer.valueOf(userId));
+					ur.setRoleId(Integer.valueOf(roleId));
+					list.add(ur);
+				}
+			} else {
+				UserRole ur = new UserRole();
+				ur.setUserId(Integer.valueOf(userId));
+				list.add(ur);
+			}
+		}
+
+		// 先删除把原来中间表tb_user_role中用户的角色
+		userRoleDao.deleteBatch(list);
+
+		// 然后判断是否传入角色id，如果传入调用Dao层批量插入，否则不插入
+		if (rIds != null && rIds.length > 0) {
+			userRoleDao.saveBatch(list);
+		}
+
+	}
+
+	/**
+	 * 根据用户Id删除对应的用户，可批量删除
+	 * @param userIds-用户id的集合 
+	 * @return
+	 */
+	@Override
+	public Integer deleteUser(String userIds) {
+		String[] uIds = userIds.split(",");
+		List<Integer> list = new ArrayList<>();
+		if (uIds != null && uIds.length > 0) {
+			for (String userId : uIds) {
+				list.add(Integer.valueOf(userId));
+			}
+		}
+		return userDao.deleteUser(list);
+	}
+}

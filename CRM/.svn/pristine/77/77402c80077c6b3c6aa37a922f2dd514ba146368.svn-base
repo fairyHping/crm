@@ -1,0 +1,20 @@
+package com.zhidi.system.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.IContactsDao;
+import com.zhidi.system.entity.Contacts;
+import com.zhidi.system.service.IContactsService;
+
+
+@Service
+public class ContactsServiceImpl extends BaseServiceImpl<Contacts> implements IContactsService {
+	
+	@Autowired
+	private    IContactsDao  contactsdao;
+
+	
+}

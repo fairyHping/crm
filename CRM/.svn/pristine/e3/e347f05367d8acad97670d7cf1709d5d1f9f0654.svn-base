@@ -1,0 +1,111 @@
+package com.zhidi.system.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhidi.common.result.JsonResult;
+import com.zhidi.common.result.PageBean;
+import com.zhidi.system.entity.Task;
+import com.zhidi.system.entity.User;
+import com.zhidi.system.service.ITaskService;
+import com.zhidi.system.service.IUserService;
+
+/**
+*2017年11月4日
+*@author 作者: Zhang
+*描述：
+*/
+@Controller
+@RequestMapping("/system/task")
+public class TaskContorller {
+	
+	@Autowired
+	protected ITaskService taskService;
+	
+	@Autowired
+	protected IUserService userService;
+
+	/**
+	 * 点击树状列表中的任务，在子窗口打开人物界面，到达任务界面
+	 * @return
+	 */
+	@GetMapping("/list")
+	public  String listTask(){
+		//查询任意字段下拉框
+		
+		return "system/task/listTask";
+	}
+	
+	/**
+	 * 查询所有数据，拿到数据展示到前端页面的分页中
+	 * @param page
+	 * @return
+	 */
+	@PostMapping("/listTask")
+	@ResponseBody
+	public  JsonResult listTaskAll(PageBean<Task> page){
+		page=taskService.findByPage(page);
+		return JsonResult.buildSuccessResult("操作成功", page);
+	}
+	
+	/**
+	 * 控制器跳转到添加任务的jsp，通知查出负责人展示到前端页面下拉框中
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/addTask")
+	public String addTask(Model model){
+		List<User> list=userService.findAll();
+		model.addAttribute("Users", list);
+		return "system/task/addTask";
+	}
+	
+	/**
+	 * 执行添加
+	 * @param task
+	 * @return
+	 */
+	@PostMapping("/doAddTask")
+	@ResponseBody
+	public JsonResult doAddTask(Task task){
+		task.setCreateTime(new Date());
+		task.setUpdateTime(new Date());
+		int rows=taskService.save(task);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("添加成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "添加失败！");
+		}
+	}
+	
+	/**
+	 * 删除功能
+	 * @param taskIds
+	 * @return
+	 */
+	@PostMapping("/deleteTask")
+	@ResponseBody
+	public JsonResult deleteTask(String taskIds) {
+		Integer rows = taskService.deletdTask(taskIds);
+		if (rows > 0) {
+			return JsonResult.buildSuccessResult("删除成功！");
+		} else {
+			return JsonResult.buildFailureResult(rows, "删除失败！");
+		}
+	}
+	
+	@GetMapping("/updateTask")
+	public String updateTask(){
+		
+		return "";
+	}
+}
+

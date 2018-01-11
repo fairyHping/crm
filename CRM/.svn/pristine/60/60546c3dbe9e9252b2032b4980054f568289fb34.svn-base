@@ -1,0 +1,118 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+basePath+"/";
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+        <base href="<%=path%>">
+        <meta charset="UTF-8">
+        <title>客户管理</title>
+        <%@include file="../script.html" %>
+    
+    </head>
+    <body>
+      <div>
+	    	<div style="padding: 1px;background-color: #ECECFF" >
+	    		<label>客户视图：</label>
+		    		 <a class="easyui-linkbutton" data-options="iconCls:'icon-more',plain:true">全部</a>
+		    		 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-man',plain:true">我的客户</a>
+			    	 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-tip',plain:true">下属</a>
+	    		<span style="margin-right: 150px">
+	                 <a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">今日新建</a>
+	    			 <a class="easyui-linkbutton add-button" data-options="iconCls:'icon-add',plain:true">本周新建</a>
+		    		 <a class="easyui-linkbutton remove-button" data-options="iconCls:'icon-edit',plain:true">本月新建</a>
+		    		 <a class="easyui-linkbutton edit-bmutton" data-options="iconCls:'icon-add',plain:true">我的关注</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-man',plain:true">我的共享</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-reload',plain:true">共享给我的</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-cart',plain:true">回收站</a>
+		    		 <a class="easyui-linkbutton assign-button" data-options="iconCls:'icon-search',plain:true">高级搜索</a>
+	    		</span>
+	    	</div>	
+	    	<div style="padding: 10px">
+	    	      <select style="width: 80px">
+	    	        <option>批量操作</option>
+	    	      </select>
+		    	  <span style="">
+		    	      <select style="color: gray">
+		    	           <option>---请选择筛选条件---</option>
+		    	      </select>
+		    	      <select style="color: gray">
+		    	            <option>包含</option>
+		    	      </select>
+		    	      <select style="width: 80px"></select>    	 
+		    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">搜索</a>
+		    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-sum',plain:true">送短信</a>
+		    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true">接收邮件</a>
+	    	      </span>
+	    	      <a  id="tabx" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" style="margin-left: 200px">新建客户</a>
+	    	      <a  id="tab" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true">客户工具</a>
+    	       </div>	 	 
+    	</div>
+    	<table id="customerList" style="width:100%">
+    	</table>
+    	<div id="topWindow"></div>
+    	
+    
+    	<script type="text/javascript">		
+
+		/* function(){
+
+              $("#tabx").on("click",function(){
+            	    url:"system/customer/system/add";
+
+                  });
+			}
+   	    */
+   	 $("#tabx").on("click",function(){	          
+           	parent.openTopWindow({url :"system/customer/system/add",
+   		 	title:"客户信息",	   		 	
+   		 	 width : 800,
+             height : 650,
+			})
+           	doSearch()	           	          
+       });
+
+   	 
+			$(function(){
+				$("#customerList").datagrid({
+					url : "system/customer/pool",
+					toolbar : "#toolbar",
+					pagination : true,
+					fitColumns : true,
+					rownumbers : true,
+					idField : "customerId",
+					columns : [[
+						{field:'customerId',width:70,align:'center',checkbox:true},		
+						{field:'name',title:'客户名称',width:70,align:'center'},
+						{field:'industry',title:'客户行业',width:70,align:'center'},
+						{field:'rating',title:'评分',width:70,align:'center'},
+						{field:'address',title:'客户联系地址',width:70,align:'center'},
+						{field:'zipCode',title:'邮编',width:70,align:'center'},
+						{field:'user',title:'创建者',width:70,align:'center',formatter:function(value){
+							if(value){
+								return value.userName;
+							}
+							return "";
+						} },
+						{field:'createTime',title:'创建时间',width:70,align:'center'},
+						{field:'updateTime',title:'更新时间',width:70,align:'center'},
+					    {field:'opreation',title:'操作',width:100,align:'center',formatter:function(value,rowData,index){
+                                 return "<a href='javascript:void(0)'  onclick='detail("+rowData.id+")'>查看</a>&nbsp;&nbsp;"
+                                 +"<a href='javascript:void(0)'  onclick='detail("+rowData.id+")'>编辑</a>"   
+						    }}
+					]],
+					loadFilter: function(data){
+						if(data && data.result){
+							return data.result;
+							$("#customerList").datagrid("reload");
+						}
+						return null;
+					}
+				});
+			});
+		
+    	</script>
+    </body>
+</html>

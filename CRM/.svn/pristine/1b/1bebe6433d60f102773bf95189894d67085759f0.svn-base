@@ -1,0 +1,171 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<base href="<%=path%>">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>添加关怀</title>
+<%@include file="../../script.html"%>
+
+<style type="text/css">
+.td1 {
+	background-color: #f5f5f5;
+	width: 100;
+}
+
+table {
+	border-collapse: collapse;
+	border-color: #f5ffff;
+	margin: 30px auto 0;
+	background-color: white;
+}
+
+body {
+	color: black;
+	background-color: #f5f5f5;
+}
+
+td {
+	min-width: 100px
+}
+
+tr {
+	height: 50px
+}
+</style>
+</head>
+<body>
+	<div id="div">
+		<form id="addForm">
+			<div id="main" class="easyui-panel">
+				<table style="text-align: center">
+					<tr>
+						<td colspan="4" id="other"><strong>主要信息</strong></td>
+					</tr>
+					<tr>
+						<td class="td1" align="right">关怀主题：</td>
+						<td><input type="text" name="industry"
+							id="industry" class="easyui-combobox" data-options="required:true"></td>
+						<td class="td1" align="right">客户：</td>
+						<td class="td2"><input
+							type="text" name="name" id="name" value="${customer.name }" 
+							class="easyui-combobox" data-options="required:true"></td>
+					</tr>
+					<tr>
+					  <td class="td1" align="right">拥有者：</td>
+						<td><input type="text" name="ownerUserId"
+							id="ownerUserId" class="easyui-combobox" data-options="required:true"></td>
+							<td class="td1" align="right">创建者：</td>
+						<td><input type="text" name="creatorUserId"
+							id="creatorUserId" class="easyui-combobox" data-options="required:true"></td>
+					</tr>
+					<tr>
+					     <td class="td1">关怀时间：</td>
+						 <td class="td2"> 
+						<input name="createTime" id="createTime" class="easyui-datetimebox " 
+							value='<fmt:formatDate value='${customer.createTime}' pattern='yyyy-MM-dd HH:mm:ss'/>' >
+							</td>
+					</tr>
+					<tr>
+						<td colspan="4" align="center"><a
+							class="easyui-linkbutton save"
+							data-options="iconCls:'icon-ok',plain:true">保存</a> <a
+							class="easyui-linkbutton saveAndSet"
+							data-options="iconCls:'icon-add',plain:true">保存并新建</a> <a
+							class="easyui-linkbutton back-button" href="javascript:void(0);"
+							data-options="iconCls:'icon-back',plain:true">返回</a></td>
+					</tr>
+					
+			</table>
+			</div>
+		</form>
+	</div>
+	<script type="text/javascript">
+			$(function(){
+				$(function(){
+					
+					/* 获取所有角色信息 */
+					$('#ownerUserId').combobox({
+						"url" : "system/users/listAll",
+						"valueField" : 'userId',
+						"textField" : 'userName',
+						"loadFilter" : function(data) {
+							if (data && data.success) {
+								return data.result;
+							}
+							return null;
+						}
+					});
+
+					
+					});
+				
+				/* 获取所有信息 */
+				$('#creatorUserId').combobox({
+					"url" : "system/users/listAll",
+					"valueField" : 'userId',
+					"textField" : 'userName',
+					"loadFilter" : function(data) {
+						if (data && data.success) {
+							return data.result;
+						}
+						return null;
+					}
+				});	
+			
+			});
+         $(function(){
+			
+			/* 获取所有角色信息 */
+			$('#name').combobox({
+				"url" : "system/customer/listAll",
+				"valueField" : 'customerId',
+				"textField" : 'name',
+				"loadFilter" : function(data) {
+					if (data && data.success) {
+						return data.result;
+					}
+					return null;
+				}
+			});
+     	});
+
+ 		$(function() {
+ 			$(".back-button").on("click", function() {
+ 				parent.$("#topWindow").window("close");
+ 			})
+
+ 			//添加客户
+ 			$(".save").on(
+ 					"click",
+ 					function(event) {
+ 						event.preventDefault();
+ 						
+ 						$.post("system/customer/addCare", $("#addForm").serialize(),
+ 							function(data) {
+ 							if (data.success) {
+ 								parent.$.messager.alert({
+ 									title : "提示",
+ 									msg : data.message,
+ 								})
+ 								parent.$("#topWindow").window("close")
+ 							} else {
+ 								$.messager.alert({
+ 									title : "提示",
+ 									msg : data.message,
+ 								})
+ 							}
+ 						}, "json")
+ 					})
+ 		});		
+	</script>
+	</body>		
+	</html>	
+

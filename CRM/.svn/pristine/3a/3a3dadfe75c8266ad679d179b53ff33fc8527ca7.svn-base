@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CRM登录</title>
+<script type="text/javascript" src="static/jquery/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="static/css/login.css">
+</head>
+<body>
+	<section class="container">
+		<div class="login">
+			<h1>登录CRM系统</h1>
+			<span id="info"></span>
+			<form id="loginForm" method="post" action="index.html">
+				<p>
+					<input type="text" name="username" value="" placeholder="用户名">
+				</p>
+				<p>
+					<input type="password" name="password" value="" placeholder="密码">
+				</p>
+				<p class="remember_me">
+					<label> <input type="checkbox" name="remember_me"
+						id="remember_me"> 7天内自动登录
+					</label>
+				</p>
+				<p class="submit">
+					<input type="submit" value="登录">
+				</p>
+			</form>
+		</div>
+
+		<div class="login-help">
+			<p>
+				忘记密码? <a href="index.html">点击这里找回</a>.
+			</p>
+		</div>
+	</section>
+	<script type="text/javascript">
+		function check(value, pattern){
+			var regexp = new  RegExp(pattern);
+			return regexp.test(value);
+		}
+		
+		$(function(){
+			$("input[name=username]").on("blur",function(){
+				if(!check($(this).val(),'^[a-zA-Z0-9]{5,20}$')){
+					$("#info").html("用户名必须是数字英文字母组合，且长度为5到20位").css({"font-weight":"bold","color":"#F00"});
+				}else{
+					$("#info").html("");
+				}
+				
+			});
+			$("input[name=password]").on("blur",function(){
+				if(!check($(this).val(),'^[a-zA-Z0-9]{6,16}$')){
+					$("#info").html("密码必须是数字英文字母组合，且长度为6到16位").css({"font-weight":"bold","color":"#F00"});
+				}else{
+					$("#info").html("");
+				}
+				
+			});
+			
+			$("#loginForm").on("submit",function(event){
+				event.preventDefault();
+				//对表单数据进行校验
+				if(!check($("input[name=username]").val(),'^[a-zA-Z0-9]{5,20}$')){
+					$("#info").html("用户名必须是数字英文字母组合，且长度为5到20位").css({"font-weight":"bold","color":"#F00"});
+					return;
+				}
+				
+				if(!check($("input[name=password]").val(),'^[a-zA-Z0-9]{6,16}$')){
+					$("#info").html("密码必须是数字英文字母组合，且长度为6到16位").css({"font-weight":"bold","color":"#F00"});
+					return;
+				}
+				
+				//发送ajax请求
+				$.post("system/login",
+						$(this).serialize(),//将表单中的数据序列化为  username=admin&password=admin 的格式
+						function(data){
+							if(data && data.success){
+									window.location.href="index";
+									return;
+					}else if(data && !data.success){
+						$("#info").html(data.message).css({"font-weight":"bold","color":"#F00"});
+					}
+					
+				},"json");
+				
+			})
+		})
+	</script>
+</body>
+</html>

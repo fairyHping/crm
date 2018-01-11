@@ -1,0 +1,12 @@
+com.test
+com.zhidi.base
+com.zhidi.base.exception
+com.zhidi.common.result
+com.zhidi.common.taglib
+com.zhidi.spring.jackson
+com.zhidi.system.controller
+com.zhidi.system.dao
+com.zhidi.system.entity
+com.zhidi.system.service
+com.zhidi.system.service.impl
+com.zhidi.util

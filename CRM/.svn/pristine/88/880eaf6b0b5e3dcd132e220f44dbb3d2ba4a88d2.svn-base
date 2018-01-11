@@ -1,0 +1,60 @@
+package com.zhidi.system.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.zhidi.base.BaseDao;
+
+import com.zhidi.system.entity.Customer;
+import com.zhidi.system.entity.Product;
+import com.zhidi.system.entity.User;
+
+public interface ICustomerDao extends BaseDao<Customer> {
+   
+      int  insertPool(Customer customer);
+	/**
+	 * 按查询条件查询总记录数
+	 * @param condition -查询条件
+	 * @return
+	 */
+	Integer countOne(@Param("con") Map<String, Object> condition);
+
+	/**
+	 * 按查询条件查询分页数据
+	 * @param offset -分页的起始索引
+	 * @param rows -每一页的记录数
+	 * @param condition -查询条件
+	 * @return
+	 */
+	List<Customer> findByPageOne(@Param("offset")Integer offset, @Param("pageSize")Integer rows, @Param("con")Map<String, Object> condition);
+
+	/**客户池
+	 * 按查询条件查询总记录数
+	 * @param condition -查询条件
+	 * @return
+	 */
+	Integer countTwo(Map<String, Object> condition);
+	/**
+	 *  客户池，按查询条件查询分页数据
+	 * @param offset -分页的起始索引
+	 * @param rows -每一页的记录数
+	 * @param condition -查询条件
+	 * @return
+	 */
+	List<Customer> findByPageTwo(Integer offset, Integer rows, Map<String, Object> condition);
+
+	/**
+	 * 根据客户Id删除对应的客户，可批量删除
+	 * @param userIds-客户id的集合 
+	 * @return
+	 */
+	Integer deleteCustomer(@Param("customerIds")List<Integer> customerIds);
+	/**
+	 * 根据对应的id查询对应的客户
+	 * @param customerId
+	 * @return
+	 */
+	Customer findByName(@Param("name") String name);
+}

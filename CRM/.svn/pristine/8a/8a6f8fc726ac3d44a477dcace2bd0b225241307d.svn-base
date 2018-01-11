@@ -1,0 +1,221 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+	String basePath = request.getContextPath();
+	String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ basePath + "/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=path%>">
+<meta charset="UTF-8">
+<title>线索管理</title>
+<%@include file="../../script.html"%>
+<style type="text/css">
+#ul li {
+	text-decoration: none; /*去掉前面的圆点*/
+	list-style: none;
+	float: left;
+	display: block; /* 将链接设为块级元素 */
+	padding: 0px 3px; /* 设置内边距 */
+	text-decoration: none; /* 去掉下划线 */
+	border-right: 1px solid #000; /* 在左侧加上分隔线 */
+	font-size: 14px;
+}
+
+#ul {
+	background-color: #F4F4F4;
+	padding: 20px;
+}
+
+a {
+	text-decoration: none;
+}
+
+#ul li:hover {
+	cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+	<div>
+		<div style="background-color: #ECECFF; padding-bottom: 5px">
+			<ul id="ul">
+				<li><strong>视图：☰</strong>
+				<li>全部</li>
+				<li>我负责的</li>
+				<li>下属负责的</li>
+				<li>下属创建</li>
+				<li>已转换线索</li>
+				<li>今日联系</li>
+				<li>本周需联系</li>
+				<li>本月需联系</li>
+				<li>7日未联系</li>
+				<li>15日未联系</li>
+				<li>30日未联系</li>
+				<li>最近创建</li>
+				<li>最近修改</li>
+				<li style="border: 0;">最近创建</li>
+			</ul>
+		</div>
+		<div id="toolbar">
+			<select style="width: 80px;">
+				<option>批量操作</option>
+			</select> <span style=""> <select style="color: gray">
+					<option>---请选择筛选条件---</option>
+			</select> <select style="color: gray">
+					<option>包含</option>
+			</select> <select style="width: 80px;"></select> <a id="searchBtn"
+				class="easyui-linkbutton"
+				data-options="iconCls:'icon-search',plain:true">搜索</a> <a
+				id="sendSms" class="easyui-linkbutton"
+				data-options="iconCls:'icon-large_smartart',plain:true">发送短信</a> <a
+				id="receiveEmail" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">接收邮件</a>
+			</span> <span style="float: right"> <a id="garbage"
+				class="easyui-linkbutton"
+				data-options="iconCls:'icon-no',plain:true">回收站</a> <a
+				id="transformBtn" class="easyui-linkbutton"
+				data-options="iconCls:'icon-reload',plain:true">线索转换</a> <a
+				id="editBtn" class="easyui-linkbutton"
+				data-options="iconCls:'icon-edit',plain:true">修改线索</a> <a
+				id="addBtn" class="easyui-linkbutton"
+				data-options="iconCls:'icon-add',plain:true">新建线索</a> <a
+				id="customer" class="easyui-linkbutton"
+				data-options="iconCls:'icon-save',plain:true">客户工具</a>
+			</span>
+		</div>
+	</div>
+	<table id="leadsList" style="width: 100%">
+	</table>
+
+
+
+	<script type="text/javascript">
+		$(function() {
+			$("#addBtn").on("click", function(event) {
+				//阻止原有的点击事件行为
+				event.preventDefault();
+				//打开新窗口，新窗口中展示角色列表页面
+				parent.openTopWindow({
+					width : 800,
+					height : 640,
+					title : "添加线索",
+					url : "system/leads/addLeads",
+					onClose : function() {
+						$("#leadsList").datagrid("reload");
+						$("#leadsList").datagrid("uncheckAll");
+					}
+
+				});
+
+			});
+		});
+
+		$(function() {
+			$("#leadsList")
+					.datagrid(
+							{
+								url : "system/leads/listLeads",
+								toolbar : "#toolbar",
+								pagination : true,
+								fitColumns : true,
+								rownumbers : true,
+								idField : "leadsId",
+								columns : [ [
+										{
+											field : 'leadsId',
+											width : 60,
+											align : 'center',
+											checkbox : true
+										},
+										{
+											field : 'name',
+											title : '公司名',
+											width : 60
+										},
+										{
+											field : 'contactsName',
+											title : '联系人姓名',
+											width : 60
+										},
+										{
+											field : 'saltname',
+											title : '尊称',
+											width : 60
+										},
+										{
+											field : 'mobile',
+											title : '手机',
+											width : 60
+										},
+										{
+											field : 'nextstepTime',
+											title : '下次联系时间',
+											width : 60
+										},
+										{
+											field : 'nextstep',
+											title : '下次联系内容',
+											width : 60
+										},
+										{
+											field : 'ownerUser',
+											title : '负责人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'creatorUser',
+											title : '创建人',
+											width : 60,
+											formatter : function(value) {
+												if (value) {
+													return value.userName;
+												} else {
+													return "";
+												}
+
+											}
+										},
+										{
+											field : 'createTime',
+											title : '创建时间',
+											width : 60
+										},
+										{
+											field : 'dueDayNum',
+											title : '距到期天数',
+											width : 60
+										},
+										{
+											field : 'operation',
+											title : '操作',
+											width : 60,
+											align : 'center',
+											formatter : function(value,
+													rowData, index) {
+												return "<a href='javascript:void(0)'  onclick='detail("
+														+ rowData.id
+														+ ")'>查看</a>"
+											}
+										} ] ],
+								loadFilter : function(data) {
+									if (data && data.result) {
+										return data.result;
+									}
+									return null;
+								}
+							});
+		});
+	</script>
+</body>
+</html>

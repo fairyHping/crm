@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IPositionDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Position">
+    <id column="position_id" jdbcType="INTEGER" property="positionId" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  
+  <resultMap type="com.zhidi.system.entity.Position" id="PositionResultMap"
+		extends="BaseResultMap">
+		<association property="pos" columnPrefix="pos_"
+			resultMap="com.zhidi.system.dao.IPositionDao.BaseResultMap" />
+		<association property="dept" columnPrefix="d_"
+			resultMap="com.zhidi.system.dao.IDepartmentDao.BaseResultMap" />
+	</resultMap>
+	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_position
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Position">
+    insert into tb_crm_position (position_id, parent_id, name, 
+      department_id, description)
+    values (#{positionId,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{departmentId,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Position">
+    update tb_crm_position
+    set parent_id = #{parentId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR}
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select position_id, parent_id, name, department_id, description
+    from tb_crm_position
+    where position_id = #{positionId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select position_id, parent_id, name, department_id, description
+    from tb_crm_position
+  </select>
+  <select id="count" resultType="integer">
+  	select count(position_id)
+    from tb_crm_position
+    <where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source !=null  and con.source!=''">
+					parent_id=#{con.source}
+				</if>
+				<if test="con.content !=null and con.content!=''">
+					and name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</where>
+  </select>
+  <select id="findByPage" resultMap="PositionResultMap">
+		select p.position_id, p.parent_id, p.name, p.department_id, p.description,
+		pos.position_id pso_position_id, 
+		pos.parent_id pos_parent_id, 
+		pos.name pos_name, 
+		pos.department_id pos_department_id, 
+		pos.description pos_description,
+		d.department_id d_department_id,
+		d.parent_id d_parent_id,
+		d.name d_name,
+		d.description d_description
+		from tb_crm_position p
+		left join tb_crm_position pos
+		on p.parent_id = pos.position_id
+		left join tb_crm_department d		
+		on p.department_id = d.department_id
+		<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source !=null  and con.source!=''">
+					p.parent_id=#{con.source}
+				</if>
+				<if test="con.content !=null and con.content!=''">
+					and p.name like concat("%",#{con.content},"%")
+				</if>
+			</if>
+		</where>
+		limit #{offset},#{pageSize}
+  </select>	
+  <delete id="deletePosition" parameterType="java.lang.Integer">
+		delete from tb_crm_position
+		where position_id in
+		<foreach collection="positionIds" item="positionId" open="("
+			close=")" separator=",">
+			#{positionId}
+		</foreach>
+	</delete>	
+</mapper>

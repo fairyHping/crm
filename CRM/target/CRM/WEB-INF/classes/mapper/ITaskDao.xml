@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ITaskDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Task">
+    <id column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="owner_user_id" jdbcType="VARCHAR" property="ownerUserId" />
+    <result column="about_users" jdbcType="VARCHAR" property="aboutUsers" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="due_date" jdbcType="DATE" property="dueDate" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="priority" jdbcType="VARCHAR" property="priority" />
+    <result column="send_email" jdbcType="VARCHAR" property="sendEmail" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="isclose" jdbcType="INTEGER" property="isclose" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <!-- 关联用户表 -->
+  <resultMap type="com.zhidi.system.entity.Task" id="taskResultMap" extends="BaseResultMap">
+  	<association property="user" columnPrefix="u_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"/>
+  	<association property="user1" columnPrefix="us_" resultMap="com.zhidi.system.dao.IUserDao.BaseResultMap"/>
+  </resultMap>
+  <sql id="basicColumns">
+  	t.task_id,t.owner_user_id,t.about_users,t.subject,t.due_date,t.status,t.priority,t.send_email,t.creator_user_id,t.create_time,t.update_time,t.isclose,t.is_deleted,t.delete_user_id,t.delete_time,t.description
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_task
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Task">
+    insert into tb_crm_task (task_id, owner_user_id, about_users, 
+      subject, due_date, status, 
+      priority, send_email, creator_user_id, 
+      create_time, update_time, isclose, 
+      is_deleted, delete_user_id, delete_time, 
+      description)
+    values (#{taskId,jdbcType=INTEGER}, #{ownerUserId,jdbcType=VARCHAR}, #{aboutUsers,jdbcType=VARCHAR}, 
+      #{subject,jdbcType=VARCHAR}, #{dueDate,jdbcType=DATE}, #{status,jdbcType=VARCHAR}, 
+      #{priority,jdbcType=VARCHAR}, #{sendEmail,jdbcType=VARCHAR}, #{creatorUserId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isclose,jdbcType=INTEGER}, 
+      #{isDeleted,jdbcType=INTEGER}, #{deleteUserId,jdbcType=INTEGER}, #{deleteTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Task">
+    update tb_crm_task
+    set owner_user_id = #{ownerUserId,jdbcType=VARCHAR},
+      about_users = #{aboutUsers,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      due_date = #{dueDate,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      priority = #{priority,jdbcType=VARCHAR},
+      send_email = #{sendEmail,jdbcType=VARCHAR},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      isclose = #{isclose,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      delete_user_id = #{deleteUserId,jdbcType=INTEGER},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select task_id, owner_user_id, about_users, subject, due_date, status, priority, 
+    send_email, creator_user_id, create_time, update_time, isclose, is_deleted, delete_user_id, 
+    delete_time, description
+    from tb_crm_task
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select task_id, owner_user_id, about_users, subject, due_date, status, priority, 
+    send_email, creator_user_id, create_time, update_time, isclose, is_deleted, delete_user_id, 
+    delete_time, description
+    from tb_crm_task
+  </select>
+  <select id="count" resultType="integer">
+  	select count(task_id) from tb_crm_task
+  	<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source!=null and con.source!=''">
+					<!-- 主题 -->
+					<if test="con.source=='subject'">
+						subject like concat("%",#{con.content},"%")
+					</if>
+					<!-- 创建人 编号 creatorUserId -->
+					<if test="con.source=='creatorUserId'">
+						and creator_user_id in(select
+						user_id from tb_users
+						where user_name
+						like concat("%",#{con.content},"%"))
+					</if>
+					<!-- 负责人-->
+					<if test="con.source=='ownerUserId'">
+						owner_user_id in(select
+						user_id from tb_users
+						where user_name
+						like concat("%",#{con.content},"%"))
+					</if>
+					<!-- 级别 -->
+					<if test="con.source=='priority'">
+						priority =#{con.content}
+					</if>
+					<!-- 状态 -->
+					<if test="con.source=='status'">
+						status =#{con.content}
+					</if>
+				</if>
+			</if>
+		</where>
+  </select>
+   <select id="findByPage" resultMap="taskResultMap">
+  	select <include refid="basicColumns"/>,
+  	u.user_id u_user_id,
+  	u.user_name u_user_name,
+  	u.password u_password,
+  	u.salt u_salt,
+  	u.phone u_phone,
+  	u.email u_email,
+  	u.note u_note,
+  	u.create_time u_create_time,
+  	u.update_time u_update_time,
+  	us.user_id us_user_id,
+  	us.user_name us_user_name,
+  	us.password us_password,
+  	us.salt us_salt,
+  	us.phone us_phone,
+  	us.email us_email,
+  	us.note us_note,
+  	us.create_time us_create_time,
+  	us.update_time us_update_time
+  	from tb_crm_task t left join tb_users u on t.owner_user_id=u.user_id
+  	left join tb_users us on t.creator_user_id=us.user_id
+  	<where>
+			<if test="con!=null and !con.isEmpty()">
+				<if test="con.source!=null and con.source!=''">
+					<!-- 主题 -->
+					<if test="con.source=='subject'">
+						subject like concat("%",#{con.content},"%")
+					</if>
+					<!-- 创建人 编号 creatorUserId -->
+					<if test="con.source=='creatorUserId'">
+						and creator_user_id in(select
+						user_id from tb_users
+						where user_name
+						like concat("%",#{con.content},"%"))
+					</if>
+					<!-- 负责人-->
+					<if test="con.source=='ownerUserId'">
+						owner_user_id in(select
+						user_id from tb_users
+						where user_name
+						like concat("%",#{con.content},"%"))
+					</if>
+					<!-- 级别 -->
+					<if test="con.source=='priority'">
+						priority =#{con.content}
+					</if>
+					<!-- 状态 -->
+					<if test="con.source=='status'">
+						status =#{con.content}
+					</if>
+				</if>
+			</if>
+		</where>
+		limit #{offset},#{pageSize}
+  </select>
+  <update id="deleteTask" parameterType="com.zhidi.system.entity.Task">
+  	update tb_crm_task set status='已删除',delete_time=#{deleteTime},is_deleted='0',delete_user_id=(select user_id from tb_users where user_name=#{userName}) where task_id in
+    <foreach collection="taskIds" item="taskId" open="(" close=")" separator=",">
+    	#{taskId}
+    </foreach>
+  </update>
+</mapper>

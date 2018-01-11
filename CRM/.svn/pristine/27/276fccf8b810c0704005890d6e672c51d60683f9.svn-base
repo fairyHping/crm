@@ -1,0 +1,17 @@
+
+
+package com.zhidi.system.service;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.Leads;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年11月6日
+* 类描述：
+*/
+public interface ILeadsService extends BaseService<Leads>{
+
+}
+
+

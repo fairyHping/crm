@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.IEmailRecordDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.EmailRecord">
+    <id column="email_record_id" jdbcType="INTEGER" property="emailRecordId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="to_addr" jdbcType="VARCHAR" property="toAddr" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_email_record
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.EmailRecord">
+    insert into tb_crm_email_record (email_record_id, user_id, to_addr, 
+      subject, send_time, status, 
+      content)
+    values (#{emailRecordId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{toAddr,jdbcType=VARCHAR}, 
+      #{subject,jdbcType=VARCHAR}, #{sendTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.EmailRecord">
+    update tb_crm_email_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      to_addr = #{toAddr,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select email_record_id, user_id, to_addr, subject, send_time, status, content
+    from tb_crm_email_record
+    where email_record_id = #{emailRecordId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select email_record_id, user_id, to_addr, subject, send_time, status, content
+    from tb_crm_email_record
+  </select>
+</mapper>

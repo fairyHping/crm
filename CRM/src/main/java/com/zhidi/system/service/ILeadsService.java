@@ -1,0 +1,64 @@
+
+
+package com.zhidi.system.service;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.Leads;
+
+/**
+* @author 作者:ZHP
+* createTime 创建时间:2017年5月6日
+* 类描述：
+*/
+public interface ILeadsService extends BaseService<Leads>{
+
+	/**
+	 * 删除线索，可批量删除
+	 * @param leadsIds -线索id
+	 * @return
+	 */
+	Integer deleteBatch(String leadsIds);
+
+	/**
+	 * 将线索放入线索池，可批量放入
+	 * @param leadsIds
+	 * @return
+	 */
+	Integer toPoolBatch(String leadsIds);
+
+	/**
+	 * 根据线索id将线索从回收站撤回
+	 * @param leadsIds -线索id
+	 * @return
+	 */
+	Integer withdrawLeads(String leadsIds);
+
+	/**
+	 * 进行线索转换
+	 * @param leadsIds -线索id
+	 * @param userId -线索转换人id
+	 * @return
+	 */
+	Integer leadsTransform(Integer leadsId,Integer userId);
+
+	/**
+	 * 当前用户领取线索池中的线索
+	 * @param leadsId -被领取的线索id
+	 * @param userId -当前用户的id
+	 * @return
+	 */
+	Integer getLeads(Integer leadsId, Integer userId);
+
+	/**
+	 * 给用户分配线索，可批量分配
+	 * @param leadsIds -线索id
+	 * @param userId -用户id
+	 * @return
+	 */
+	Integer assignBatch(String leadsIds, Integer userId);
+
+	
+
+}
+
+

@@ -1,0 +1,21 @@
+package com.zhidi.system.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.zhidi.base.BaseServiceImpl;
+import com.zhidi.system.dao.ISmsRecordDao;
+import com.zhidi.system.entity.SmsRecord;
+import com.zhidi.system.service.ISmsRecordService;
+
+@Service
+public class SmsRecordServiceImpl extends BaseServiceImpl<SmsRecord> implements ISmsRecordService{
+	@Autowired
+	private ISmsRecordDao smsRecordDao;
+	
+	
+	public Integer save(SmsRecord smsrecord){
+		
+		return smsRecordDao.insert(smsrecord);
+	}
+}

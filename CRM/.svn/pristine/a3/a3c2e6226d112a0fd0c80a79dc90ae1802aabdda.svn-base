@@ -1,0 +1,14 @@
+package com.zhidi.system.service;
+
+import com.zhidi.base.BaseService;
+import com.zhidi.system.entity.Business;
+
+public interface IBusinessService extends BaseService<Business> {
+	/**
+	 * 根据商机Id批量删除
+	 * @param customerIds
+	 * @return
+	 */
+	Integer deleteBusiness(String businessIds);
+
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhidi.system.dao.ITaskDao">
+  <resultMap id="BaseResultMap" type="com.zhidi.system.entity.Task">
+    <id column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="owner_user_id" jdbcType="VARCHAR" property="ownerUserId" />
+    <result column="about_users" jdbcType="VARCHAR" property="aboutUsers" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="due_date" jdbcType="DATE" property="dueDate" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="priority" jdbcType="VARCHAR" property="priority" />
+    <result column="send_email" jdbcType="VARCHAR" property="sendEmail" />
+    <result column="creator_user_id" jdbcType="INTEGER" property="creatorUserId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="isclose" jdbcType="INTEGER" property="isclose" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="delete_user_id" jdbcType="INTEGER" property="deleteUserId" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_crm_task
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhidi.system.entity.Task">
+    insert into tb_crm_task (task_id, owner_user_id, about_users, 
+      subject, due_date, status, 
+      priority, send_email, creator_user_id, 
+      create_time, update_time, isclose, 
+      is_deleted, delete_user_id, delete_time, 
+      description)
+    values (#{taskId,jdbcType=INTEGER}, #{ownerUserId,jdbcType=VARCHAR}, #{aboutUsers,jdbcType=VARCHAR}, 
+      #{subject,jdbcType=VARCHAR}, #{dueDate,jdbcType=DATE}, #{status,jdbcType=VARCHAR}, 
+      #{priority,jdbcType=VARCHAR}, #{sendEmail,jdbcType=VARCHAR}, #{creatorUserId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isclose,jdbcType=INTEGER}, 
+      #{isDeleted,jdbcType=INTEGER}, #{deleteUserId,jdbcType=INTEGER}, #{deleteTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zhidi.system.entity.Task">
+    update tb_crm_task
+    set owner_user_id = #{ownerUserId,jdbcType=VARCHAR},
+      about_users = #{aboutUsers,jdbcType=VARCHAR},
+      subject = #{subject,jdbcType=VARCHAR},
+      due_date = #{dueDate,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      priority = #{priority,jdbcType=VARCHAR},
+      send_email = #{sendEmail,jdbcType=VARCHAR},
+      creator_user_id = #{creatorUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      isclose = #{isclose,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      delete_user_id = #{deleteUserId,jdbcType=INTEGER},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select task_id, owner_user_id, about_users, subject, due_date, status, priority, 
+    send_email, creator_user_id, create_time, update_time, isclose, is_deleted, delete_user_id, 
+    delete_time, description
+    from tb_crm_task
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select task_id, owner_user_id, about_users, subject, due_date, status, priority, 
+    send_email, creator_user_id, create_time, update_time, isclose, is_deleted, delete_user_id, 
+    delete_time, description
+    from tb_crm_task
+  </select>
+</mapper>
