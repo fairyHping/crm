@@ -38,7 +38,7 @@
 					<td class="td2">
 						<input type="hidden" name="roleId" value="${role.roleId }"> 
 						<input type="text" name="roleName" value="${role.roleName }" 
-							class="easyui-textbox theme-textbox-radius" data-options="required:true,validType:'length[6,20]'">
+							class="easyui-textbox theme-textbox-radius" data-options="required:true,validType:'length[1,20]'">
 					</td>
 				</tr>
 				<tr>

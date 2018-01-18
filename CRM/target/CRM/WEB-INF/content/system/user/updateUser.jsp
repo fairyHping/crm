@@ -41,13 +41,13 @@
 					</td>
 				</tr>
 
-				<tr style="display:${empty user ? 'table-row' : 'none'};">
+				<%-- <tr style="display:${empty user ? 'table-row' : 'none'};">
 					<td class="td1">密码：</td>
 					<td class="td2">
 						<input type="password" name="password" value="${user.password }"
 							class="easyui-textbox" data-options="required:true,validType:'length[6,20]'">
 					</td>
-				</tr>
+				</tr> --%>
 
 				<tr>
 					<td class="td1">联系电话：</td>
@@ -110,9 +110,8 @@
 	
 	
 		$(function(){
-			$("#saveBtn").on("click", function(event) {
-				//阻止原有的点击事件行为
-				event.preventDefault();
+			$("#saveBtn").on("click", function() {
+				
 				var isValid = $('#form').form('validate');
 				if(!isValid){
 					return;
